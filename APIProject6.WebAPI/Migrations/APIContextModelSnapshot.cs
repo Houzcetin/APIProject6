@@ -198,6 +198,9 @@ namespace APIProject6.WebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"), 1L, 1);
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageURL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -214,6 +217,8 @@ namespace APIProject6.WebAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProductId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
@@ -313,6 +318,20 @@ namespace APIProject6.WebAPI.Migrations
                     b.HasKey("TestimonialID");
 
                     b.ToTable("Testimonials");
+                });
+
+            modelBuilder.Entity("APIProject6.WebAPI.Entities.Product", b =>
+                {
+                    b.HasOne("APIProject6.WebAPI.Entities.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("APIProject6.WebAPI.Entities.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
