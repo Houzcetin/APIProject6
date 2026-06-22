@@ -1,6 +1,6 @@
-﻿namespace APIProject6.WebAPI.Entities
+﻿namespace APIProject6.WebUI.Dtos.ServiceDtos
 {
-    public class Service
+    public class ResultServiceDto
     {
         public int ServiceId { get; set; }
         public string Title { get; set; }
