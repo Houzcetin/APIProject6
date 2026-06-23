@@ -64,7 +64,12 @@ namespace APIProject6.WebAPI.Controllers
             return Ok("Update successfull.");
         }
 
+        [HttpGet("MessageListByIsReadFalse")]
 
-
+        public IActionResult MessageListByIsReadFalse()
+        {
+            var values = _context.Messages.Where(x => x.IsRead == false).ToList();
+            return Ok(values);
+        }
     }
 }
