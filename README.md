@@ -400,10 +400,3 @@ Planned improvements for this project:
 
 GitHub: [Houzcetin](https://github.com/Houzcetin)
 
----
-
-## License
-
-This project does not currently include a license file.
-
-If you plan to use this project publicly or professionally, consider adding a license such as MIT.
