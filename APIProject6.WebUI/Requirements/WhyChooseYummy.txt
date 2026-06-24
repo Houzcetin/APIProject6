@@ -3,3 +3,10 @@ Yummy brings fresh flavors,
 quality ingredients, and a warm dining experience together in one place. 
 Every meal is prepared with care, offering delicious tastes that satisfy every craving. 
 Whether you want comfort food or something new, Yummy is always the right choice.
+
+
+dropdown-item-icon bg-primary text-white
+
+
+fas fa-chevron-right
+fas fa-bell

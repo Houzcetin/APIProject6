@@ -1,0 +1,49 @@
+@model List<APIProject6.WebUI.Dtos.NotificationDtos.ResultNotificationDto>
+@* dropdown-item-icon bg-primary text-white *@
+
+<li class="dropdown dropdown-list-toggle">
+    <a href="#" data-toggle="dropdown"
+       class="nav-link notification-toggle nav-link-lg">
+        <i data-feather="bell" class="bell"></i>
+    </a>
+    <div class="dropdown-menu dropdown-list dropdown-menu-right pullDown">
+        <div class="dropdown-header">
+            Notifications
+            <div class="float-right">
+                <a href="#">Mark All As Read</a>
+            </div>
+        </div>
+        <div class="dropdown-list-content dropdown-list-icons">
+
+@{
+    string GetBgColor(string icon, string currentBg)
+    {
+        if (!string.IsNullOrEmpty(currentBg) && currentBg != "bg-primary") return currentBg;
+        if (string.IsNullOrEmpty(icon)) return "bg-primary";
+        if (icon.Contains("fa-user")) return "bg-info";
+        if (icon.Contains("fa-check")) return "bg-success";
+        if (icon.Contains("fa-exclamation") || icon.Contains("fa-times")) return "bg-danger";
+        return "bg-primary";
+    }
+}
+
+            @foreach(var item in Model)
+            {
+                <a href="#" class="dropdown-item dropdown-item-unread">
+                    <span class="dropdown-item-icon @GetBgColor(item.IconUrl, item.IconBackground) text-white" style="display: flex; align-items: center; justify-content: center;">
+                        <i class="@item.IconUrl"></i>
+                    </span> <span class="dropdown-item-desc">
+                        @item.Description<span class="time">
+                            @item.NotificationDate.ToString("HH:mm:ss")
+                        </span>
+                    </span>
+                </a>
+            }
+            
+
+        </div>
+        <div class="dropdown-footer text-center">
+            <a href="#">View All <i class="fas fa-chevron-right"></i></a>
+        </div>
+    </div>
+</li>
