@@ -1,5 +1,8 @@
 ﻿using APIProject6.WebAPI.Context;
+using APIProject6.WebAPI.Dtos.CategoryDtos;
+using APIProject6.WebAPI.Dtos.FeatureDtos;
 using APIProject6.WebAPI.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +13,11 @@ namespace APIProject6.WebAPI.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly APIContext _context;
-        public CategoriesController(APIContext context)
+        private readonly IMapper _mapper;
+        public CategoriesController(APIContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -23,9 +28,12 @@ namespace APIProject6.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateCategory(Category category)
+        public IActionResult CreateCategory(CreateCategoryDto createCategoryDto)
         {
-            _context.Categories.Add(category);
+            //_context.Categories.Add(category);
+            //_context.SaveChanges();
+            var value = _mapper.Map<Category>(createCategoryDto);
+            _context.Categories.Add(value);
             _context.SaveChanges();
             return Ok("The category has been added.");
         }
@@ -50,9 +58,10 @@ namespace APIProject6.WebAPI.Controllers
 
         [HttpPut]
 
-        public IActionResult UpdateCategory(Category category)
+        public IActionResult UpdateCategory(UpdateCategoryDto updateCategoryDto)
         {
-            _context.Categories.Update(category);
+            var value = _mapper.Map<Category>(updateCategoryDto);
+            _context.Categories.Update(value);
             _context.SaveChanges();
             return Ok("The category has been updated.");
         }
