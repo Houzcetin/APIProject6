@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "CreateProduct";
     Layout = "~/Views/AdminLayout/Index.cshtml";
+    //(IEnumerable<SelectListItem>)ViewBag.categoryValues
 }
 
 
@@ -25,10 +26,10 @@
                             <input type="text" asp-for="Price" class="form-control" />
                             <br />
                             <label>Product's Category</label>
-                            <select asp-for ="CategoryId" class="form-control" asp-items="ViewBag.categoryValues">
+                            <select asp-for="CategoryId" class="form-control" asp-items="(IEnumerable<SelectListItem>)ViewBag.CategoryValues">
                                 <option value="">--Select Category--</option>
                             </select>
-                            
+                           
                             <br />
                             <label>Image URL</label>
                             <input type="text" asp-for="ImageURL" class="form-control" />

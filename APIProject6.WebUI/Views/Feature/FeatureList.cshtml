@@ -1,13 +1,10 @@
-﻿@model List<ResultProductDto>
+﻿@model List<ResultFeatureDto>
+
 @{
-    ViewData["Title"] = "ProductList";
+    ViewData["Title"] = "FeatureList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
 }
-
-
-
-
 
 <section class="section">
     <div class="section-body">
@@ -15,16 +12,18 @@
             <div class="col-12 col-md-12 col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Product List Managment</h4>
+                        <h4>Feature Ops</h4>
+                        <br />
+                        
                     </div>
                     <div class="card-body">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Product Name</th>
-                                    <th scope="col">Product Price</th>
-                                    <th scope="col">Product's Category</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Subtitle</th>
+                                    <th scope="col">Description</th>
                                     <th scope="col">Delete</th>
                                     <th scope="col">Update</th>
                                 </tr>
@@ -35,22 +34,32 @@
                                     count++;
                                     <tr>
                                         <th scope="row">@count</th>
-                                        <td>@item.ProductName</td>
-                                        <td>@item.Price</td>
-                                        <td>@item.CategoryName</td>
-                                        <td><a href="/Product/DeleteProduct/@item.ProductId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Product/UpdateProduct/@item.ProductId/" class="btn btn-success">Update</a></td>
+                                        <td>@item.Title</td>
+                                        <td>@item.SubTitle</td>
+                                        <td>@item.Description</td>
+                                        <td><a href="/Feature/DeleteFeature/@item.FeatureID/" class="btn btn-danger">Delete</a></td>
+                                        <td><a href="/Feature/UpdateFeature/@item.FeatureID/" class="btn btn-success">Update</a></td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
-                        <a href="/Product/CreateProduct/" class="btn btn-info">Enter a new Product</a>
+                        @if(Model.Count == 1)
+                        {
+                            <a href="#" class="btn btn-info" onclick="return false;">Feature already exist</a>
+
+                        }
+                        else
+                        {
+                        <a href="/Feature/CreateFeature/" class="btn btn-info">Enter New Feature</a>
+                        }
+                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 
 
 

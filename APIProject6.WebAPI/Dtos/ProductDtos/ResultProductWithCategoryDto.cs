@@ -1,4 +1,4 @@
-﻿using APIProject6.WebAPI.Entities;
+using APIProject6.WebAPI.Entities;
 
 namespace APIProject6.WebAPI.Dtos.ProductDtos
 {
@@ -10,7 +10,7 @@ namespace APIProject6.WebAPI.Dtos.ProductDtos
         public decimal Price { get; set; }
         public string ImageURL { get; set; }
         public int CategoryId { get; set; }
-        public string CateogoryName { get; set; }
+        public string CategoryName { get; set; }
 
     }
 }

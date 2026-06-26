@@ -1,4 +1,5 @@
-﻿using APIProject6.WebAPI.Dtos.CategoryDtos;
+using APIProject6.WebAPI.Dtos.AboutDtos;
+using APIProject6.WebAPI.Dtos.CategoryDtos;
 using APIProject6.WebAPI.Dtos.FeatureDtos;
 using APIProject6.WebAPI.Dtos.MessageDtos;
 using APIProject6.WebAPI.Dtos.NotificationDtos;
@@ -23,7 +24,7 @@ namespace APIProject6.WebAPI.Mapping
             CreateMap<Message, GetByIdMessageDto>().ReverseMap();
 
             CreateMap<Product, CreateProductDto>().ReverseMap();
-            CreateMap<Product, ResultProductWithCategoryDto>().ForMember(x => x.CateogoryName, y => y.MapFrom
+            CreateMap<Product, ResultProductWithCategoryDto>().ForMember(x => x.CategoryName, y => y.MapFrom
             (z => z.Category.CategoryName)).ReverseMap();
 
             CreateMap<Notification,ResultNotificationDto>().ReverseMap();
@@ -33,6 +34,11 @@ namespace APIProject6.WebAPI.Mapping
 
             CreateMap<Category, CreateCategoryDto>().ReverseMap();
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
+
+            CreateMap<About, ResultAboutDto>().ReverseMap();
+            CreateMap<About, CreateAboutDto>().ReverseMap();
+            CreateMap<About, UpdateAboutDto>().ReverseMap();
+            CreateMap<About, GetAboutByIdDto>().ReverseMap();
         }
     }
 }
