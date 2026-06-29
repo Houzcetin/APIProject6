@@ -18,9 +18,11 @@
         <div class="dropdown-list-content dropdown-list-message">
             @foreach (var item in Model)
             {
+                var index = Model.IndexOf(item);
+                var imageNumber = (index % 5) + 1;
                 <a href="/Message/MessageDetail/@item.MessageId" class="dropdown-item">
                     <span class="dropdown-item-avatar text-white">
-                        <img alt="image" src="/otika-bootstrap-admin-template/assets/img/users/user-1.png" class="rounded-circle">
+                        <img alt="image" src="/otika-bootstrap-admin-template/assets/img/users/user-@(imageNumber).png" class="rounded-circle">
                     </span> <span class="dropdown-item-desc">
                         <span class="message-user">
                             @item.NameSurname
