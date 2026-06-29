@@ -1,0 +1,42 @@
+﻿@model GetMessageByIdDto
+
+@{
+    ViewData["Title"] = "UpdateMessage";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Message Update List</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <input type="hidden" asp-for="MessageId" />
+                            <label>Sender Name Surname</label>
+                            <input type="text" asp-for="NameSurname" class="form-control" />
+                            <br />
+                            <label>Sender Email</label>
+                            <input type="text" asp-for="Email" class="form-control" />
+                            <br />
+                            <label>Message Title</label>
+                            <input type="text" asp-for="Subject" class="form-control" />
+                            <br />
+                            <label>Message Content</label>
+                            <input type="text" asp-for="MessageDetails" class="form-control" />
+                            <br />
+                            <button class="btn btn-primary">Create Message</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
