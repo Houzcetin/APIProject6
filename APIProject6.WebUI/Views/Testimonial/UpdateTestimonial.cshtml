@@ -1,0 +1,42 @@
+﻿@model GetTestimonialByIdDto
+
+@{
+    ViewData["Title"] = "UpdateTestimonial";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Testimonial Update List</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <input type="hidden" asp-for="testimonialID" />
+                            <label>Testimonial Name</label>
+                            <input type="text" asp-for="nameSurname" class="form-control" />
+                            <br />
+                            <label>Testimonial Title</label>
+                            <input type="text" asp-for="title" class="form-control" />
+                            <br />
+                            <label>Testimonial Comment</label>
+                            <input type="text" asp-for="comment" class="form-control" />
+                            <br />
+                            <label>Testimonial ImageUrl</label>
+                            <input type="text" asp-for="imageURL" class="form-control" />
+                            <br />
+                            <button class="btn btn-success">Update Testimonial</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+

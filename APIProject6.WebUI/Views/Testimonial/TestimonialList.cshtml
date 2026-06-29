@@ -1,0 +1,52 @@
+﻿@model List<ResultTestimonialDto>
+
+@{
+    ViewData["Title"] = "TestimonialList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Testimonial List</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Testimonial Name</th>
+                                    <th scope="col">Testimonial Title</th>
+                                    <th scope="col">Testimonial Comment</th>
+                                    <th scope="col">Delete</th>
+                                    <th scope="col">Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    count++;
+                                    <tr>
+                                        <th scope="row">@count</th>
+                                        <td>@item.nameSurname</td>
+                                        <td>@item.title</td>
+                                        <td>@item.comment</td>
+                                        <td><a href="/Testimonial/DeleteTestimonial/@item.testimonialID/" class="btn btn-danger">Delete</a></td>
+                                        <td><a href="/Testimonial/UpdateTestimonial/@item.testimonialID/" class="btn btn-success">Update</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <a href="/Testimonial/CreateTestimonial/" class="btn btn-info">Enter a new Testimonial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+

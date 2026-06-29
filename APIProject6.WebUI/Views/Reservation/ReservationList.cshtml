@@ -1,0 +1,60 @@
+﻿@model List<ResultReservationDto>
+
+@{
+    ViewData["Title"] = "ReservationList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Reservation List</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Customer Name</th>
+                                    <th scope="col">Reservation Date</th>
+                                    <th scope="col">Reservation Hour</th>
+                                    <th scope="col">Number of attendees</th>
+                                    <th scope="col">Reservation status</th>
+                                    <th scope="col">Delete</th>
+                                    <th scope="col">Update</th>
+                                    <th scope="col">Confirm</th>
+                                    <th scope="col">Cancel</th>
+                                    <th scope="col">Postpone</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    count++;
+                                    <tr>
+                                        <th scope="row">@count</th>
+                                        <td>@item.NameSurname</td>
+                                        <td>@item.ReservationDate</td>
+                                        <td>@item.ReservationTime</td>
+                                        <td>@item.CountOfPeople</td>
+                                        <td>@item.ReservationStatus</td>
+                                        <td><a href="/Reservation/DeleteReservation/@item.ReservationId/" class="btn btn-danger">Delete</a></td>
+                                        <td><a href="/Reservation/UpdateReservation/@item.ReservationId/" class="btn btn-success">Update</a></td>
+                                        <td><a href="/Reservation/ConfirmReservation/@item.ReservationId/" class="btn btn-info">Confirm</a></td>
+                                        <td><a href="/Reservation/CancelReservation/@item.ReservationId/" class="btn btn-dark">Cancel</a></td>
+                                        <td><a href="/Reservation/PostponeReservation/@item.ReservationId/" class="btn btn-warning">Postpone</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

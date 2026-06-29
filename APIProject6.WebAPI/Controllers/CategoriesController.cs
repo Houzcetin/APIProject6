@@ -1,6 +1,5 @@
 ﻿using APIProject6.WebAPI.Context;
 using APIProject6.WebAPI.Dtos.CategoryDtos;
-using APIProject6.WebAPI.Dtos.FeatureDtos;
 using APIProject6.WebAPI.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -65,8 +64,5 @@ namespace APIProject6.WebAPI.Controllers
             _context.SaveChanges();
             return Ok("The category has been updated.");
         }
-
-
-
     }
 }
