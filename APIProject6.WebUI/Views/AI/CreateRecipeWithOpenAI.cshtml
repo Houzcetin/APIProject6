@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewData["Title"] = "CreateRecipeWithOpenAI";
+    Layout = "~/Views/AdminLayout/Index.cshtml";    
+}
+
+    <section class="section">
+        <div class="section-body">
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Recipe Suggestion with OpenAI</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                @Html.AntiForgeryToken()
+                                <label>Please enter ingredients you have</label>
+                                <input type="text" name="prompt" class="form-control" />
+                                <br />
+                                <button class="btn btn-primary">Create Recipe Suggestion</button>
+                            </form>
+                            <br /><br />
+                            @if (ViewBag.recipe != null)
+                            {
+                                <hr />
+                                <h5>Recipe Suggestion by AI</h5>
+                                <pre style="white-space: pre-wrap;">@ViewBag.recipe</pre>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
