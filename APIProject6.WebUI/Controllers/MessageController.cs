@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using static APIProject6.WebUI.Controllers.AIController;
 
 namespace APIProject6.WebUI.Controllers
@@ -163,10 +164,72 @@ namespace APIProject6.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> SendMessage(CreateMessageDto createMessageDto)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = new HttpClient();
+            var apiKey = _configuration["HuggingFace:ApiKey"]?.Trim();
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new Exception("Hugging Face API key is not found.");
+            }
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            try
+            {
+                var translateRequestBody = new
+                {
+                    inputs = createMessageDto.MessageDetails,
+                };
+                var translateJson = System.Text.Json.JsonSerializer.Serialize(translateRequestBody);
+                var translateContent = new StringContent(translateJson, Encoding.UTF8, "application/json");
+
+                var translateResponse = await client.PostAsync("https://router.huggingface.co/hf-inference/models/Helsinki-NLP/opus-mt-tr-en", translateContent);
+                var translateResponseString = await translateResponse.Content.ReadAsStringAsync();
+
+                string englishText = createMessageDto.MessageDetails;
+                if (translateResponseString.TrimStart().StartsWith("["))
+                {
+                    var translateDoc = JsonDocument.Parse(translateResponseString);
+                    englishText = translateDoc.RootElement[0].GetProperty("translation_text").GetString();
+                    //ViewBag.v = englishText;
+                }
+
+                var toxicRequestBody = new
+                {
+                    inputs = englishText
+                };
+                var toxicJson = System.Text.Json.JsonSerializer.Serialize(toxicRequestBody);
+                var toxicContent = new StringContent(toxicJson, Encoding.UTF8, "application/json");
+                var toxicResponse = await client.PostAsync("https://router.huggingface.co/hf-inference/models/unitary/toxic-bert", toxicContent);
+                var toxicResponseString = await toxicResponse.Content.ReadAsStringAsync();
+
+                if(toxicResponseString.TrimStart().StartsWith("["))
+                {
+                    var toxicDoc = JsonDocument.Parse(toxicResponseString);
+                    foreach (var item in toxicDoc.RootElement[0].EnumerateArray())
+                    {
+                        string label = item.GetProperty("label").GetString();
+                        double score = item.GetProperty("score").GetDouble();
+
+                        if(score > 0.5)
+                        {
+                            createMessageDto.Status = "Toxic message";
+                            break;
+                        }
+                    }
+                }
+                if(string.IsNullOrEmpty(createMessageDto.Status))
+                {
+                    createMessageDto.Status = "Message received";
+                }
+            }
+            catch (Exception ex)
+            {
+                createMessageDto.Status = "Waiting for confirmation";
+                throw;
+            }
+
+            var client2 = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(createMessageDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var responseMessage = await client.PostAsync("https://localhost:7277/api/Messages", stringContent);
+            var responseMessage = await client2.PostAsync("https://localhost:7277/api/Messages", stringContent);
             if (responseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("MessageList");
