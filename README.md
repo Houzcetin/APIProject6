@@ -1,402 +1,286 @@
-# APIProject - Yummy Restaurant API & Web UI
+<h1 align="center">🍽️ APIProject6 — Yummy Restaurant API & Web UI</h1>
 
-![.NET](https://img.shields.io/badge/.NET-6.0-512BD4?style=for-the-badge\&logo=dotnet\&logoColor=white)
-![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-Web%20API-5C2D91?style=for-the-badge\&logo=dotnet\&logoColor=white)
-![Entity Framework Core](https://img.shields.io/badge/Entity%20Framework-Core-68217A?style=for-the-badge)
-![SQL Server](https://img.shields.io/badge/SQL%20Server-Database-CC2927?style=for-the-badge\&logo=microsoftsqlserver\&logoColor=white)
+<p align="center">
+  A full-stack restaurant management platform built with <b>ASP.NET Core 6</b>, featuring a RESTful Web API,
+  an MVC front-end, and integrated <b>AI capabilities</b> (OpenAI &amp; Hugging Face) for content generation and message moderation.
+</p>
 
-## Overview
-
-**APIProject** is a restaurant management web application developed with **ASP.NET Core 6**.
-The project is built with a layered structure that separates the **Web API** side and the **Web UI** side.
-
-The application focuses on managing restaurant-related data such as categories, products, chefs, contact information, features, messages, reservations, services, images, and testimonials.
-
-This project is suitable for learning and practicing modern ASP.NET Core development, RESTful API design, Entity Framework Core, SQL Server database operations, DTO usage, validation, and MVC-based web interfaces.
+<p align="center">
+  <img src="https://img.shields.io/badge/.NET-6.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 6" />
+  <img src="https://img.shields.io/badge/ASP.NET%20Core-Web%20API-5C2D91?style=for-the-badge&logo=dotnet&logoColor=white" alt="ASP.NET Core Web API" />
+  <img src="https://img.shields.io/badge/Entity%20Framework-Core-68217A?style=for-the-badge" alt="EF Core" />
+  <img src="https://img.shields.io/badge/SQL%20Server-Database-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" alt="SQL Server" />
+  <img src="https://img.shields.io/badge/OpenAI-Integrated-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI" />
+  <img src="https://img.shields.io/badge/Hugging%20Face-Integrated-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" alt="Hugging Face" />
+</p>
 
 ---
 
-## Project Structure
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [Key Features](#-key-features)
+- [AI &amp; Integrations](#-ai--integrations)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Modules](#-modules)
+- [Getting Started](#-getting-started)
+- [Configuration (API Keys &amp; Secrets)](#-configuration-api-keys--secrets)
+- [Running the Applications](#-running-the-applications)
+- [API Reference](#-api-reference)
+- [Roadmap](#-roadmap)
+- [Author](#-author)
+
+---
+
+## 🧭 Overview
+
+**APIProject6** is a restaurant management web application composed of two independent ASP.NET Core 6 projects:
+
+| Project | Role |
+| ------- | ---- |
+| **APIProject6.WebAPI** | RESTful Web API — data access, business rules, and persistence via Entity Framework Core + SQL Server. |
+| **APIProject6.WebUI** | ASP.NET Core MVC front-end — a restaurant website plus an admin area that consumes the Web API over HTTP. |
+
+Beyond standard CRUD, the platform adds **AI-powered features**: AI recipe generation, AI-assisted customer-support replies, and automatic **translation + toxicity moderation** of incoming contact messages.
+
+It is an ideal reference for learning modern ASP.NET Core development, RESTful API design, EF Core, DTO/AutoMapper patterns, and integrating third-party AI services.
+
+---
+
+## ✨ Key Features
+
+### Web API
+- RESTful architecture with clean, resource-oriented controllers
+- Full CRUD across all domain modules
+- Entity Framework Core (Code-First) with SQL Server
+- DTO-based data transfer with **AutoMapper**
+- **FluentValidation** for request validation
+- Interactive **Swagger / OpenAPI** documentation
+
+### Web UI
+- ASP.NET Core **MVC** with Razor Views and reusable **ViewComponents**
+- Public restaurant website (hero, menu, chefs, gallery, events, testimonials, contact)
+- Admin area for managing content
+- Consumes the Web API via `IHttpClientFactory`
+- Bootstrap-based responsive UI with static assets under `wwwroot`
+
+### AI-Powered
+- 🤖 **AI Recipe Generator** — turns ingredients into a formatted recipe (OpenAI)
+- 💬 **AI Support Replies** — drafts polite, on-brand answers to customer messages (OpenAI)
+- 🌐 **Auto-Translation** — translates incoming messages (TR → EN) via Hugging Face
+- 🛡️ **Toxicity Moderation** — flags harmful messages using a Hugging Face classifier and tags them with a status
+
+---
+
+## 🧠 AI & Integrations
+
+| Capability | Provider | Model / Endpoint | Where |
+| ---------- | -------- | ---------------- | ----- |
+| Recipe generation | OpenAI | Chat Completions API | `AIController.CreateRecipeWithOpenAI` |
+| Support-reply drafting | OpenAI | Chat Completions API | `MessageController.AnswerMessageWithOpenAI` |
+| Message translation (TR → EN) | Hugging Face | `Helsinki-NLP/opus-mt-tr-en` | `MessageController.SendMessage` |
+| Toxicity classification | Hugging Face | `unitary/toxic-bert` | `MessageController.SendMessage` |
+
+> **Note:** Hugging Face requests use the current Inference Providers router
+> (`https://router.huggingface.co/hf-inference/models/...`). The legacy
+> `api-inference.huggingface.co` host has been retired.
+
+All AI keys are supplied through configuration and **never committed to source control** — see [Configuration](#-configuration-api-keys--secrets).
+
+---
+
+## 🏗️ Architecture
 
 ```text
-APIProject/
-├── APIProje.WebApi/
-│   ├── Controllers/
-│   ├── Context/
-│   ├── Dtos/
-│   ├── Entities/
-│   ├── Mapping/
-│   ├── Migrations/
-│   ├── ValidationRules/
-│   ├── Program.cs
-│   └── appsettings.json
+APIProject6/
+├── APIProject6.WebAPI/          # RESTful Web API
+│   ├── Controllers/             # Categories, Products, Chefs, Messages, Reservations, Images, ...
+│   ├── Context/                 # APIContext (EF Core DbContext)
+│   ├── Dtos/                    # Data Transfer Objects
+│   ├── Entities/                # Domain entities
+│   ├── Mapping/                 # AutoMapper profiles
+│   ├── Migrations/              # EF Core migrations
+│   ├── ValidationRules/         # FluentValidation rules
+│   └── Program.cs
 │
-├── APIProje.WebUI/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── Views/
-│   ├── ViewComponents/
-│   ├── wwwroot/
-│   ├── Program.cs
-│   └── appsettings.json
+├── APIProject6.WebUI/           # ASP.NET Core MVC front-end
+│   ├── Controllers/             # Default (website), Admin, AI, Message, Gallery, ...
+│   ├── Views/                   # Razor views
+│   ├── ViewComponents/          # Reusable UI components
+│   ├── Dtos/                    # Client-side DTOs
+│   ├── wwwroot/                 # Static assets (CSS, JS, images)
+│   └── Program.cs
 │
-└── APIProject.sln
+└── APIProject6.sln
 ```
 
----
-
-## Technologies Used
-
-* **ASP.NET Core 6**
-* **ASP.NET Core Web API**
-* **ASP.NET Core MVC**
-* **Entity Framework Core**
-* **Microsoft SQL Server**
-* **AutoMapper**
-* **FluentValidation**
-* **Swagger / Swashbuckle**
-* **Razor Views**
-* **Bootstrap**
-* **HTML / CSS / JavaScript**
+**Request flow:** `Browser → WebUI (MVC) → HttpClient → WebAPI → EF Core → SQL Server`,
+with the WebUI also calling **OpenAI** and **Hugging Face** directly for AI features.
 
 ---
 
-## Features
+## 🧰 Tech Stack
 
-### Web API Features
-
-* RESTful API structure
-* CRUD operations
-* Entity Framework Core database operations
-* SQL Server database integration
-* DTO-based data transfer
-* AutoMapper object mapping
-* FluentValidation validation rules
-* Swagger UI for API testing
-* Product listing with category information
-* Organized controller structure
-
-### Web UI Features
-
-* ASP.NET Core MVC architecture
-* Razor View structure
-* Shared layout usage
-* ViewComponent support
-* Static asset management with `wwwroot`
-* Restaurant-themed user interface
+- **ASP.NET Core 6** — Web API & MVC
+- **Entity Framework Core** (Code-First) + **Microsoft SQL Server**
+- **AutoMapper** · **FluentValidation**
+- **Swagger / Swashbuckle**
+- **OpenAI API** · **Hugging Face Inference API**
+- **Razor Views** · **Bootstrap** · HTML / CSS / JavaScript
 
 ---
 
-## Main Modules
+## 🧩 Modules
 
-The project includes the following main modules:
-
-* Categories
-* Products
-* Chefs
-* Contacts
-* Features
-* Messages
-* Reservations
-* Services
-* Images
-* Testimonials
+Categories · Products · Chefs · Contacts · Features · Messages · Reservations · Services · Images (Gallery) · Testimonials · Events · Notifications · Abouts
 
 ---
 
-## Database
-
-The project uses **SQL Server** with **Entity Framework Core**.
-
-Default database name:
-
-```text
-ApiYummyDb
-```
-
-Database context file:
-
-```text
-APIProje.WebApi/Context/APIContext.cs
-```
-
-Example local SQL Server connection:
-
-```csharp
-Server=.\\SQLEXPRESS;Initial Catalog=ApiYummyDb;Integrated Security=True;TrustServerCertificate=True;
-```
-
-> Note: For a more professional production-ready structure, the connection string should be moved to `appsettings.json` or user secrets instead of being written directly inside the DbContext.
-
----
-
-## API Endpoints
-
-### Categories
-
-| Method | Endpoint                              | Description            |
-| ------ | ------------------------------------- | ---------------------- |
-| GET    | `/api/Categories`                     | Lists all categories   |
-| POST   | `/api/Categories`                     | Creates a new category |
-| GET    | `/api/Categories/GetCategory?id={id}` | Gets a category by ID  |
-| PUT    | `/api/Categories`                     | Updates a category     |
-| DELETE | `/api/Categories?id={id}`             | Deletes a category     |
-
-### Products
-
-| Method | Endpoint                                  | Description                        |
-| ------ | ----------------------------------------- | ---------------------------------- |
-| GET    | `/api/Products`                           | Lists all products                 |
-| POST   | `/api/Products`                           | Creates a new product              |
-| GET    | `/api/Products/GetProduct?id={id}`        | Gets a product by ID               |
-| PUT    | `/api/Products`                           | Updates a product                  |
-| DELETE | `/api/Products?id={id}`                   | Deletes a product                  |
-| POST   | `/api/Products/CreateProductWithCategory` | Creates a product with category    |
-| GET    | `/api/Products/ProductListWithCategory`   | Lists products with category names |
-
-### Chefs
-
-| Method | Endpoint                     | Description        |
-| ------ | ---------------------------- | ------------------ |
-| GET    | `/api/Chefs`                 | Lists all chefs    |
-| POST   | `/api/Chefs`                 | Creates a new chef |
-| GET    | `/api/Chefs/GetChef?id={id}` | Gets a chef by ID  |
-| PUT    | `/api/Chefs`                 | Updates a chef     |
-| DELETE | `/api/Chefs?id={id}`         | Deletes a chef     |
-
-### Contacts
-
-| Method | Endpoint                           | Description                    |
-| ------ | ---------------------------------- | ------------------------------ |
-| GET    | `/api/Contacts`                    | Lists contact information      |
-| POST   | `/api/Contacts`                    | Creates contact information    |
-| GET    | `/api/Contacts/GetContact?id={id}` | Gets contact information by ID |
-| PUT    | `/api/Contacts`                    | Updates contact information    |
-| DELETE | `/api/Contacts?id={id}`            | Deletes contact information    |
-
-### Features
-
-| Method | Endpoint                           | Description           |
-| ------ | ---------------------------------- | --------------------- |
-| GET    | `/api/Features`                    | Lists all features    |
-| POST   | `/api/Features`                    | Creates a new feature |
-| GET    | `/api/Features/GetFeature?id={id}` | Gets a feature by ID  |
-| PUT    | `/api/Features`                    | Updates a feature     |
-| DELETE | `/api/Features?id={id}`            | Deletes a feature     |
-
----
-
-## Getting Started
-
-Follow these steps to run the project locally.
+## 🚀 Getting Started
 
 ### Prerequisites
 
-Make sure the following tools are installed on your computer:
+- [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+- Visual Studio 2022 or VS Code
+- SQL Server or SQL Server Express
+- EF Core CLI:
+  ```bash
+  dotnet tool install --global dotnet-ef
+  ```
+- *(Optional, for AI features)* An **OpenAI API key** and a **Hugging Face API token**
 
-* .NET 6 SDK
-* Visual Studio 2022 or Visual Studio Code
-* SQL Server or SQL Server Express
-* SQL Server Management Studio
-* Entity Framework Core CLI
-
-Install EF Core CLI if it is not already installed:
-
-```bash
-dotnet tool install --global dotnet-ef
-```
-
----
-
-## Installation
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Houzcetin/APIProject.git
+git clone https://github.com/Houzcetin/APIProject6.git
+cd APIProject6
 ```
 
-### 2. Navigate to the Project Folder
-
-```bash
-cd APIProject
-```
-
-### 3. Restore Dependencies
+### 2. Restore dependencies
 
 ```bash
 dotnet restore
 ```
 
-### 4. Configure the Database Connection
+### 3. Configure the database
 
-Open the database context file:
-
-```text
-APIProje.WebApi/Context/APIContext.cs
-```
-
-Check the SQL Server connection string and update it according to your local SQL Server setup.
-
-Example:
+The EF Core `DbContext` lives in `APIProject6.WebAPI/Context/APIContext.cs` and uses a local SQL Server:
 
 ```csharp
-Server=.\\SQLEXPRESS;Initial Catalog=ApiYummyDb;Integrated Security=True;TrustServerCertificate=True;
+Server=.\SQLEXPRESS;Initial Catalog=APIYummyDb6;Integrated Security=True;
 ```
 
-### 5. Apply Database Migrations
+Adjust it to match your environment (add `TrustServerCertificate=True;` if your setup requires it).
+
+### 4. Apply migrations
 
 ```bash
-dotnet ef database update --project APIProje.WebApi
-```
-
-### 6. Run the Web API
-
-```bash
-dotnet run --project APIProje.WebApi
-```
-
-After running the API, Swagger can be opened from:
-
-```text
-https://localhost:7081/swagger
-```
-
-or
-
-```text
-http://localhost:5228/swagger
-```
-
-### 7. Run the Web UI
-
-Open a second terminal and run:
-
-```bash
-dotnet run --project APIProje.WebUI
-```
-
-The Web UI can be opened from:
-
-```text
-https://localhost:7164
-```
-
-or
-
-```text
-http://localhost:5223
+dotnet ef database update --project APIProject6.WebAPI
 ```
 
 ---
 
-## Example API Requests
+## 🔐 Configuration (API Keys & Secrets)
 
-### Create Category
+AI features read their credentials from configuration keys `OpenAI:ApiKey` and `HuggingFace:ApiKey`.
+**Never hard-code these into `appsettings.json` in a public repository.** Use .NET User Secrets:
 
-```http
-POST /api/Categories
-Content-Type: application/json
+```bash
+cd APIProject6.WebUI
+
+dotnet user-secrets init
+dotnet user-secrets set "OpenAI:ApiKey"      "sk-your-openai-key"
+dotnet user-secrets set "HuggingFace:ApiKey" "hf_your-huggingface-token"
 ```
 
-```json
-{
-  "categoryName": "Main Course"
-}
-```
+Secrets are stored outside the repository (in your user profile) and are automatically loaded in the `Development` environment.
 
-### Create Product
+---
+
+## ▶️ Running the Applications
+
+Run the **Web API** and **Web UI** in two separate terminals.
+
+**Terminal 1 — Web API**
+```bash
+dotnet run --project APIProject6.WebAPI
+```
+| URL | |
+| --- | --- |
+| Swagger | `https://localhost:7277/swagger` |
+| HTTPS | `https://localhost:7277` |
+| HTTP | `http://localhost:5027` |
+
+**Terminal 2 — Web UI**
+```bash
+dotnet run --project APIProject6.WebUI
+```
+| URL | |
+| --- | --- |
+| Website | `https://localhost:7208` |
+| HTTP | `http://localhost:5226` |
+
+> The Web UI expects the Web API to be running at `https://localhost:7277`.
+
+---
+
+## 📡 API Reference
+
+All modules follow the same RESTful convention. Using **Categories** as the representative example:
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| `GET`  | `/api/Categories` | List all categories |
+| `POST` | `/api/Categories` | Create a category |
+| `GET`  | `/api/Categories/GetCategory?id={id}` | Get a category by ID |
+| `PUT`  | `/api/Categories` | Update a category |
+| `DELETE` | `/api/Categories?id={id}` | Delete a category |
+
+The same pattern applies to `Products`, `Chefs`, `Contacts`, `Features`, `Messages`, `Reservations`, `Images`, `Services`, `Testimonials`, `YummyEvents`, `Notifications`, and `Abouts`. A few modules expose extra actions, e.g.:
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| `POST` | `/api/Products/CreateProductWithCategory` | Create a product with its category |
+| `GET`  | `/api/Products/ProductListWithCategory` | List products including category names |
+
+**Example — create a product**
 
 ```http
 POST /api/Products
 Content-Type: application/json
 ```
-
 ```json
 {
   "productName": "Margherita Pizza",
-  "description": "Classic pizza with tomato sauce, mozzarella cheese, and basil.",
+  "description": "Classic pizza with tomato sauce, mozzarella, and basil.",
   "price": 12.99,
   "imageUrl": "image-url-here",
   "categoryID": 1
 }
 ```
 
-### Create Chef
-
-```http
-POST /api/Chefs
-Content-Type: application/json
-```
-
-```json
-{
-  "nameSurname": "Gordon Ramsay",
-  "title": "Executive Chef",
-  "description": "Experienced chef specialized in modern restaurant cuisine.",
-  "imageURL": "image-url-here"
-}
-```
+> 💡 Explore and test every endpoint interactively via **Swagger UI** at `https://localhost:7277/swagger`.
 
 ---
 
-## Validation
+## 🗺️ Roadmap
 
-The project uses **FluentValidation** for validating incoming data.
-
-For example, product data can be checked before being saved to the database. This helps keep the API cleaner, safer, and more reliable.
-
----
-
-## Object Mapping
-
-The project uses **AutoMapper** to map entities and DTOs.
-
-This helps avoid repeating manual property assignments and keeps controller code cleaner.
-
-Example usage:
-
-```csharp
-CreateMap<Product, CreateProductDto>().ReverseMap();
-```
+- [ ] Move the connection string from `APIContext` to `appsettings.json` / secrets
+- [ ] Authentication & authorization (Identity / JWT)
+- [ ] Repository & service layers
+- [ ] Global exception handling & response wrapper
+- [ ] Structured logging (Serilog)
+- [ ] Unit & integration tests
+- [ ] Docker support & deployment docs
 
 ---
 
-## Swagger
-
-Swagger is enabled for API testing and documentation.
-
-When the Web API project is running, open:
-
-```text
-https://localhost:7081/swagger
-```
-
-Swagger allows you to test GET, POST, PUT, and DELETE requests directly from the browser.
-
----
-
-## Future Improvements
-
-Planned improvements for this project:
-
-* Move connection string to `appsettings.json`
-* Add authentication and authorization
-* Add admin panel
-* Add repository and service layers
-* Add global exception handling
-* Add response wrapper structure
-* Add logging
-* Add unit tests
-* Add integration tests
-* Add Docker support
-* Add deployment documentation
-
----
-
-## Author
+## 👤 Author
 
 **Oğuz Çetin**
+GitHub: [@Houzcetin](https://github.com/Houzcetin)
 
-GitHub: [Houzcetin](https://github.com/Houzcetin)
+---
 
+<p align="center"><i>Built with ASP.NET Core 6 · Powered by OpenAI &amp; Hugging Face</i></p>
