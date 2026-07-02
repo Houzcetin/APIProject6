@@ -6,9 +6,11 @@ namespace APIProject6.WebUI.Controllers
     public class AIController : Controller
     {
         private readonly IConfiguration _configuration;
-        public AIController(IConfiguration configuration)
+        private readonly IHttpClientFactory _httpClientFactory;
+        public AIController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
+            _httpClientFactory = httpClientFactory;
         }
         public IActionResult CreateRecipeWithOpenAI()
         {
