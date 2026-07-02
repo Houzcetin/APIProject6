@@ -62,5 +62,35 @@ namespace APIProject6.WebAPI.Controllers
             _context.SaveChanges();
             return Ok("The Reservation has been updated.");
         }
+
+        [HttpGet("GetTotalReservationCount")]
+
+        public IActionResult GetTotalReservationCount()
+        {
+            var totalCount = _context.Reservations.Count();
+            return Ok(totalCount);
+        }
+
+        [HttpGet("GetTotalCustomerCount")]
+        public IActionResult GetTotalCustomerCount()
+        {
+            var totalCount = _context.Reservations.Sum(x=>x.CountOfPeople);
+            return Ok(totalCount);
+        }
+
+        [HttpGet("GetPendingReservation")]
+        public IActionResult GetPendingReservation()
+        {
+            var totalCount = _context.Reservations.Where(x=>x.ReservationStatus== "Waiting for Approval").Count();
+            return Ok(totalCount);
+        }
+        [HttpGet("GetApprovedReservation")]
+        public IActionResult GetApprovedReservation()
+        {
+            var totalCount = _context.Reservations.Where(x => x.ReservationStatus == "Approvaled").Count();
+            return Ok(totalCount);
+        }
+
+
     }
 }
