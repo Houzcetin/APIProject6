@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -60,14 +60,19 @@ namespace APIProject6.WebUI.Models
                 model = modelGpt,
                 messages = history,
                 stream = true,
-                tempreature = 0.2,
+                temperature = 0.2,
             };
 
-            using var req = new HttpRequestMessage(HttpMethod.Post, "v1/chat/completions");
+            using var req = new HttpRequestMessage(HttpMethod.Post, "chat/completions");
             req.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
             using var resp = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            resp.EnsureSuccessStatusCode();
+            if (!resp.IsSuccessStatusCode)
+            {
+                var error = await resp.Content.ReadAsStringAsync(cancellationToken);
+                await Clients.Caller.SendAsync("ReceiveError", $"OpenAI {(int)resp.StatusCode}: {error}", cancellationToken);
+                throw new HttpRequestException($"OpenAI request failed ({(int)resp.StatusCode}): {error}");
+            }
 
             using var stream = await resp.Content.ReadAsStreamAsync(cancellationToken);
             using var reader = new StreamReader(stream);
@@ -79,7 +84,7 @@ namespace APIProject6.WebUI.Models
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 if (!line.StartsWith("data:")) continue;
                 var data = line["data:".Length..].Trim();
-                if (data == "[Done]") break;
+                if (data == "[DONE]") break;
 
                 try
                 {
