@@ -23,5 +23,24 @@ namespace APIProject6.WebAPI.Context
         public DbSet<YummyEvent> YummyEvents { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<About> Abouts { get; set; }
+        public DbSet<EmployeeTask> EmployeeTasks { get; set; }
+        public DbSet<EmployeeTaskChef> EmployeeTaskChefs { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<EmployeeTaskChef>()
+                .HasKey(x => new { x.EmployeeTaskId, x.ChefId });
+
+            modelBuilder.Entity<EmployeeTaskChef>()
+                .HasOne(x => x.EmployeeTask)
+                .WithMany(x => x.EmployeeTaskChefs)
+                .HasForeignKey(x => x.EmployeeTaskId);
+
+            modelBuilder.Entity<EmployeeTaskChef>()
+                .HasOne(x => x.Chef)
+                .WithMany(x => x.EmployeeTaskChefs)
+                .HasForeignKey(x => x.ChefId);
+        }
+
     }
 }

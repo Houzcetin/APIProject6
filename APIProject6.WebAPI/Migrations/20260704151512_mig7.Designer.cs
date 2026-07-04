@@ -4,6 +4,7 @@ using APIProject6.WebAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIProject6.WebAPI.Migrations
 {
     [DbContext(typeof(APIContext))]
-    partial class APIContextModelSnapshot : ModelSnapshot
+    [Migration("20260704151512_mig7")]
+    partial class mig7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,6 +151,9 @@ namespace APIProject6.WebAPI.Migrations
                     b.Property<DateTime>("AssignDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("ChefId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DueTime")
                         .HasColumnType("datetime2");
 
@@ -156,9 +161,8 @@ namespace APIProject6.WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TaskName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TaskName")
+                        .HasColumnType("int");
 
                     b.Property<string>("TaskStatus")
                         .IsRequired()
@@ -169,22 +173,9 @@ namespace APIProject6.WebAPI.Migrations
 
                     b.HasKey("EmployeeTaskId");
 
-                    b.ToTable("EmployeeTasks");
-                });
-
-            modelBuilder.Entity("APIProject6.WebAPI.Entities.EmployeeTaskChef", b =>
-                {
-                    b.Property<int>("EmployeeTaskId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChefId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EmployeeTaskId", "ChefId");
-
                     b.HasIndex("ChefId");
 
-                    b.ToTable("EmployeeTaskChefs");
+                    b.ToTable("EmployeeTask");
                 });
 
             modelBuilder.Entity("APIProject6.WebAPI.Entities.Feature", b =>
@@ -467,23 +458,15 @@ namespace APIProject6.WebAPI.Migrations
                     b.ToTable("YummyEvents");
                 });
 
-            modelBuilder.Entity("APIProject6.WebAPI.Entities.EmployeeTaskChef", b =>
+            modelBuilder.Entity("APIProject6.WebAPI.Entities.EmployeeTask", b =>
                 {
                     b.HasOne("APIProject6.WebAPI.Entities.Chef", "Chef")
-                        .WithMany("EmployeeTaskChefs")
+                        .WithMany("EmployeeTasks")
                         .HasForeignKey("ChefId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("APIProject6.WebAPI.Entities.EmployeeTask", "EmployeeTask")
-                        .WithMany("EmployeeTaskChefs")
-                        .HasForeignKey("EmployeeTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Chef");
-
-                    b.Navigation("EmployeeTask");
                 });
 
             modelBuilder.Entity("APIProject6.WebAPI.Entities.Product", b =>
@@ -502,12 +485,7 @@ namespace APIProject6.WebAPI.Migrations
 
             modelBuilder.Entity("APIProject6.WebAPI.Entities.Chef", b =>
                 {
-                    b.Navigation("EmployeeTaskChefs");
-                });
-
-            modelBuilder.Entity("APIProject6.WebAPI.Entities.EmployeeTask", b =>
-                {
-                    b.Navigation("EmployeeTaskChefs");
+                    b.Navigation("EmployeeTasks");
                 });
 #pragma warning restore 612, 618
         }
