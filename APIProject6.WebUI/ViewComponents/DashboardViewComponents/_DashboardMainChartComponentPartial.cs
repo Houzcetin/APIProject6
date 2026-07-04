@@ -1,24 +1,20 @@
-using APIProject6.WebUI.Models;
+﻿using APIProject6.WebUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace APIProject6.WebUI.Controllers
+namespace APIProject6.WebUI.ViewComponents.DashboardViewComponents
 {
-    public class DashboardController : Controller
+    public class _DashboardMainChartComponentPartial : ViewComponent
     {
+
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public DashboardController(IHttpClientFactory httpClientFactory)
+        public _DashboardMainChartComponentPartial(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> RevenueChart()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
             var client = _httpClientFactory.CreateClient();
 
