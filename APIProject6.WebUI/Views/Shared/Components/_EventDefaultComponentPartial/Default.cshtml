@@ -1,5 +1,34 @@
 ﻿@model List<ResultEventDto>
 
+@functions {
+    private string ResolveImageUrl(string imageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return Url.Content("~/yummy-red-1.0.0/assets/img/events-1.jpg");
+        }
+
+        // Windows ters slash'larını düz slash yap, sondaki "/" varsa temizle.
+        imageUrl = imageUrl.Trim().Replace("\\", "/");
+
+        if (imageUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            imageUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return imageUrl;
+        }
+
+        imageUrl = imageUrl.TrimEnd('/');
+
+        // Başında "/" yoksa ekle ki köke göre çözülsün.
+        if (!imageUrl.StartsWith("/"))
+        {
+            imageUrl = "/" + imageUrl;
+        }
+
+        return Url.Content("~" + imageUrl);
+    }
+}
+
 <section id="events" class="events section">
 
     <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
@@ -33,7 +62,7 @@
             <div class="swiper-wrapper">
                 @foreach(var item in Model)
                 {
-                    <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(@item.ImageUrl)">
+                    <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(@ResolveImageUrl(item.ImageUrl))">
                     <h3>@item.Title</h3>
                         <div class="price align-self-start">@item.Price ₺</div>
                     <p class="description">

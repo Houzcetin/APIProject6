@@ -1,40 +1,82 @@
 ﻿@model List<APIProject6.WebUI.Dtos.ProductDtos.ResultProductDto>
 
-
 <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
-
-  
 
     <div class="tab-pane fade active show" id="menu-starters">
 
         <div class="tab-header text-center">
             <p>Menu</p>
-            <h3>All dishes</h3>
+            <h3 id="menu-title">All dishes</h3>
         </div>
 
         <div class="row gy-5">
+
             @foreach (var item in Model)
             {
-                <div class="col-lg-4 menu-item">
-                    <a href="@item.ImageURL" class="glightbox"><img src="@item.ImageURL" class="menu-img img-fluid" alt=""></a>
+                <div class="col-lg-4 menu-item"
+                     data-product-category-id="@item.CategoryId">
+
+                    <a href="@item.ImageURL" class="glightbox">
+                        <img src="@item.ImageURL"
+                             class="menu-img img-fluid"
+                             alt=""
+                             style="height:200px;width:400px;">
+                    </a>
+
                     <h4>@item.ProductName</h4>
+
                     <p class="ingredients">
                         @item.ProductDescription
                     </p>
+
                     <p class="price">
                         @item.Price ₺
                     </p>
+
                 </div>
-            
-                <!-- Menu Item -->
-                
             }
-            
-
-
 
         </div>
-    </div><!-- End Starter Menu Content -->
-
+    </div>
 
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const categoryButtons = document.querySelectorAll(".menu-category-btn");
+        const menuItems = document.querySelectorAll(".menu-item");
+        const menuTitle = document.getElementById("menu-title");
+
+        categoryButtons.forEach(button => {
+            button.addEventListener("click", function () {
+
+                const selectedCategoryId = this.getAttribute("data-category-id");
+
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove("active", "show");
+                });
+
+                this.classList.add("active", "show");
+
+                menuItems.forEach(item => {
+                    const productCategoryId = item.getAttribute("data-product-category-id");
+
+                    if (selectedCategoryId === "all" || selectedCategoryId === productCategoryId) {
+                        item.style.display = "block";
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+
+                if (selectedCategoryId === "all") {
+                    menuTitle.innerText = "All dishes";
+                } else {
+                    menuTitle.innerText = this.innerText.trim();
+                }
+
+            });
+        });
+
+    });
+</script>
