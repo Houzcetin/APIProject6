@@ -1,0 +1,132 @@
+﻿@model List<ResultGroupReservationDto>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Assign Task Table</h4>
+                <div class="card-header-form">
+                    <form>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="bg-light">
+
+                            <tr>
+                                <th class="text-center">
+                                    <div class="custom-checkbox custom-checkbox-table custom-control">
+                                        <input type="checkbox" data-checkboxes="mygroup" data-checkbox-role="dad"
+                                               class="custom-control-input" id="checkbox-all">
+                                        <label for="checkbox-all" class="custom-control-label">&nbsp;</label>
+                                    </div>
+                                </th>
+                                <th>Task Name</th>
+                                <th>ReservationOwner</th>
+                                <th>Count of People</th>
+                                <th>Task Status</th>
+                                <th>Assign Date</th>
+                                <th>Due Date</th>
+                                <th>Priority</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                string statusClass = item.ReservationStatus switch
+                                {
+                                    "Approved" => "badge-success",
+                                    "Pending" => "badge-warning",
+                                    "Cancelled" => "badge-danger",
+                                    _ => "badge-secondary"
+                                };
+
+                                string statusIcon = item.ReservationStatus switch
+                                {
+                                    "Approved" => "fas fa-check-circle",
+                                    "Pending" => "fas fa-hourglass-half",
+                                    "Cancelled" => "fas fa-times-circle",
+                                    _ => "fas fa-info-circle"
+                                };
+
+                                string priorityIcon = item.Priority switch
+                                {
+                                    "High" => "fas fa-exclamation-circle text-danger",
+                                    "Medium" => "fas fa-chevron-up text-warning",
+                                    "Low" => "fas fa-minus-circle text-success",
+                                    _ => "fas fa-circle"
+                                };
+
+                                <tr class="table-row-modern">
+                                    <td style="width: 35px;">
+                                        <input type="checkbox" />
+                                    </td>
+                                    <td class="fw-semibold">
+                                        <i class="fas fa-users text-primary me-2"></i>
+                                        @item.GroupTitle
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-user text-secondary me-2"></i>
+                                        @item.ReservationOwner
+                                    </td>
+                                    <td>
+                                        <span class="badge @statusClass px-3 py-2 rounded-pill">
+                                            <i class="@statusIcon me-1"></i>
+                                            @item.ReservationStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-user-friends text-info me-2"></i>
+                                        @item.PersonCount
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-calendar-alt text-warning me-2"></i>
+                                        @item.LastProcessDate.ToString("dd-MMM-yyyy")
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-calendar-check text-success me-2"></i>
+                                        @item.ReservationDate.ToString("dd-MMM-yyyy")
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                                            <i class="@priorityIcon me-1"></i>
+                                            @item.Priority
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm rounded-pill px-3 detail-btn"
+                                                data-id="@item.GroupReservationId"
+                                                data-title="@item.GroupTitle"
+                                                data-responsible="@item.ReservationOwner"
+                                                data-email="@item.Email"
+                                                data-status="@item.ReservationStatus"
+                                                data-person-count="@item.PersonCount"
+                                                data-reservation-date="@item.ReservationDate.ToString("dd MMM yyyy")"
+                                                data-last-process="@item.LastProcessDate.ToString("dd MMM yyyy")"
+                                                data-priority="@item.Priority"
+                                                data-details="@item.Details"
+                                                data-status-class="@statusClass"
+                                                data-status-icon="@statusIcon"
+                                                data-priority-icon="@priorityIcon">
+                                            <i class="fas fa-info-circle me-1"></i> Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

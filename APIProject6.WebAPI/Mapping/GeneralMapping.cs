@@ -1,6 +1,7 @@
 using APIProject6.WebAPI.Dtos.AboutDtos;
 using APIProject6.WebAPI.Dtos.CategoryDtos;
 using APIProject6.WebAPI.Dtos.FeatureDtos;
+using APIProject6.WebAPI.Dtos.GroupReservationDtos;
 using APIProject6.WebAPI.Dtos.ImageDtos;
 using APIProject6.WebAPI.Dtos.MessageDtos;
 using APIProject6.WebAPI.Dtos.NotificationDtos;
@@ -52,6 +53,10 @@ namespace APIProject6.WebAPI.Mapping
             CreateMap<Image, UpdateImageDto>().ReverseMap();
             CreateMap<Image, GetImageByIdDto>().ReverseMap();
 
+            CreateMap<GroupReservation, ResultGroupReservationDto>().ReverseMap();
+            CreateMap<GroupReservation, CreateGroupReservationDto>().ReverseMap();
+            CreateMap<GroupReservation, UpdateGroupReservationDto>().ReverseMap();
+            CreateMap<GroupReservation, GetGroupReservationByIdDto>().ReverseMap();
 
         }
     }

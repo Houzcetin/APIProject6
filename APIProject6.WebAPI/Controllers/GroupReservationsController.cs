@@ -1,0 +1,66 @@
+﻿using APIProject6.WebAPI.Context;
+using APIProject6.WebAPI.Dtos.GroupReservationDtos;
+using APIProject6.WebAPI.Entities;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace APIProject6.WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GroupReservationsController : ControllerBase
+    {
+        private readonly APIContext _context;
+        private readonly IMapper _mapper;
+        public GroupReservationsController(APIContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        [HttpGet]
+        public IActionResult GroupReservationList()
+        {
+            var values = _context.GroupReservations.ToList();
+            return Ok(values);
+        }
+
+        [HttpPost]
+        public IActionResult CreateGroupReservation(CreateGroupReservationDto createGroupReservationDto)
+        {
+            var value = _mapper.Map<GroupReservation>(createGroupReservationDto);
+            _context.GroupReservations.Add(value);
+            _context.SaveChanges();
+            return Ok("The GroupReservation has been added.");
+        }
+
+        [HttpDelete]
+
+        public IActionResult DeleteGroupReservation(int id)
+        {
+            var value = _context.GroupReservations.Find(id);
+            _context.GroupReservations.Remove(value);
+            _context.SaveChanges();
+            return Ok("GroupReservation has been deleted.");
+        }
+
+        [HttpGet("GetGroupReservation")]
+        public IActionResult GetGroupReservation(int id)
+        {
+            var value = _context.GroupReservations.Find(id);
+
+            return Ok(value);
+        }
+
+        [HttpPut]
+
+        public IActionResult UpdateGroupReservation(UpdateGroupReservationDto updateGroupReservationDto)
+        {
+            var value = _mapper.Map<GroupReservation>(updateGroupReservationDto);
+            _context.GroupReservations.Update(value);
+            _context.SaveChanges();
+            return Ok("The GroupReservation has been updated.");
+        }
+    }
+}

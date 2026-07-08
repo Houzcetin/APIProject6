@@ -12,15 +12,11 @@
 <body class="index-page">
 
     @await Component.InvokeAsync("_NavbarDefaultComponentPartial")
-    
-
-    
-
+ 
     <main class="main">
 
         <!-- Hero Section -->
         @await Component.InvokeAsync("_FeatureDefaultComponentPartial")
-        
         <!-- /Hero Section -->
 
         <!-- About Section -->
@@ -29,7 +25,6 @@
 
         <!-- Why Us Section -->
         @await Component.InvokeAsync("_ServiceDefaultComponentPartial")
-        
         <!-- /Why Us Section -->
 
         <!-- Stats Section -->
@@ -38,21 +33,20 @@
 
         <!-- Menu Section -->
         @await Component.InvokeAsync("_DefaultMenuViewComponentPartial")
-        
         <!-- /Menu Section -->
+
         <!-- Testimonials Section -->
         @await Component.InvokeAsync("_TestimonialDefaultComponentPartial")
-        
         <!-- /Testimonials Section -->
+
         <!-- Events Section -->
-        @await Component.InvokeAsync("_EventDefaultComponentPartial")
-        
+        @await Component.InvokeAsync("_EventDefaultComponentPartial")     
         <!-- /Events Section -->
+
         <!-- Chefs Section -->
         @await Component.InvokeAsync("_ChefDeafaultComponentPartial")
-        
-
         <!-- /Chefs Section -->
+
         <!-- Book A Table Section -->
         <section id="book-a-table" class="book-a-table section">
 
@@ -108,11 +102,13 @@
 
             </div>
 
-        </section><!-- /Book A Table Section -->
+        </section>
+        <!-- /Book A Table Section -->
+
         <!-- Gallery Section -->
         @await Component.InvokeAsync("_DefaultGalleryComponentPartial")
-        
         <!-- /Gallery Section -->
+
         <!-- Contact Section -->
         @await Component.InvokeAsync("_DefaultContactComponentPartial")
         <!-- /Contact Section -->
