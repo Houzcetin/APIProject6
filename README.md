@@ -191,7 +191,25 @@ The API follows strict RESTful conventions. Here is an example of the `/api/Prod
 
 ## 📸 Screenshots
 
-*(You can add high-quality screenshots of your new Glassmorphism Gallery, the modern Contact UI, and the AI Message Moderation Panel here!)*
+### 1. Modern Admin Dashboard (Glassmorphism & Grid UI)
+<p align="center">
+  <img src="docs/images/admin-dashboard.png" alt="Admin Dashboard & Contact UI" width="800"/>
+</p>
+
+### 2. Premium Image Gallery & Native Lightbox
+<p align="center">
+  <img src="docs/images/gallery-lightbox.png" alt="Glassmorphism Gallery & Lightbox" width="800"/>
+</p>
+
+### 3. AI Message Moderation (Toxic-Bert) & Auto-Reply
+<p align="center">
+  <img src="docs/images/message-moderation.png" alt="AI Toxicity Analyzer & Message List" width="800"/>
+</p>
+
+### 4. Public Restaurant Website
+<p align="center">
+  <img src="docs/images/public-website.png" alt="Public Restaurant Website" width="800"/>
+</p>
 
 ---
 
