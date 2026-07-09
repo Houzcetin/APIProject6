@@ -55,6 +55,16 @@ Rules:
 - ImageSearchQuery must be a short English search phrase for finding a relevant food photo.
 - Do not generate ImageUrl. ImageUrl will be added later by the backend.
 - Generate different suggestions each time.
+Diversity rules:
+- Do not repeat common dishes too often.
+- Avoid using these dishes unless absolutely necessary: burger, pasta, quinoa bowl, cheesecake, salmon bowl, chicken bowl.
+- Use different cuisines in the same response.
+- At least one suggestion must be from Turkish, Greek, Italian, Mexican, Japanese, Korean, Chinese, Indian, French, Spanish, Georgian, or Middle Eastern cuisine.
+- Include different food types: one main dish, one starter or side, one dessert or drink, and one chef special.
+- Generate different suggestions each time.
+
+Random seed:
+- {DateTime.Now.Ticks}
 ";
 
             var body = new
@@ -67,6 +77,7 @@ Rules:
                     format = new
                     {
                         type = "json_schema",
+                        temperature = 1.2,
                         name = "ai_daily_menu_suggestions",
                         strict = true,
                         schema = new

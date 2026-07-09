@@ -1,4 +1,4 @@
-﻿using APIProject6.WebUI.Dtos.MessageDtos;
+using APIProject6.WebUI.Dtos.MessageDtos;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Linq;
@@ -44,6 +44,10 @@ namespace APIProject6.WebUI.Controllers
 
         public async Task<IActionResult> CreateMessage(CreateMessageDto createMessageDto)
         {
+            createMessageDto.SendDate = DateTime.Now;
+            createMessageDto.IsRead = false;
+            createMessageDto.Status = "Message received";
+
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(createMessageDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");

@@ -1,52 +1,199 @@
-﻿@model List<ResultYummyEventDto>
+@model List<ResultYummyEventDto>
 
 @{
     ViewData["Title"] = "YummyEventList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
+    var activeCount = Model?.Count(x => x.Status) ?? 0;
 }
 
 <section class="section">
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Event Organization List</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Organization Title</th>
-                                    <th scope="col">Organization Description</th>
-                                    <th scope="col">Organization Price</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.Title</td>
-                                        <td>@item.Descritption</td>
-                                        <td>@item.Price</td>
-                                        <td><a href="/YummyEvent/DeleteYummyEvent/@item.YummyEventId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/YummyEvent/UpdateYummyEvent/@item.YummyEventId/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <a href="/YummyEvent/CreateYummyEvent/" class="btn btn-info">Enter a new Organization</a>
-                    </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-glass-cheers text-primary mr-2"></i>
+                    Event Organizations
+                    <span class="badge badge-primary rounded-pill ml-2">@(Model?.Count ?? 0)</span>
+                    @if (Model != null && Model.Any())
+                    {
+                        <span class="badge badge-success rounded-pill ml-1">@activeCount active</span>
+                    }
+                </h4>
+                <div class="card-header-action">
+                    <a href="/YummyEvent/CreateYummyEvent/" class="btn btn-primary">
+                        <i class="fas fa-plus mr-1"></i> Enter a new Organization
+                    </a>
                 </div>
             </div>
         </div>
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="card event-card @(item.Status ? "" : "event-passive")">
+                    <div class="row no-gutters align-items-stretch">
+
+                        <div class="col-md-4 col-lg-3">
+                            <div class="event-img-wrap">
+                                <img src="@item.ImageUrl" alt="@item.Title"
+                                     onerror="this.onerror=null;this.src='/yummy-red-1.0.0/assets/img/events-1.jpg';">
+                                <span class="event-price-badge">@item.Price.ToString("N0") ₺</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8 col-lg-9">
+                            <div class="card-body h-100 d-flex flex-column">
+
+                                <div class="d-flex align-items-start justify-content-between mb-2">
+                                    <h5 class="event-title mb-0">@item.Title</h5>
+                                    @if (item.Status)
+                                    {
+                                        <span class="badge badge-success event-status">
+                                            <i class="fas fa-check-circle mr-1"></i> Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary event-status">
+                                            <i class="fas fa-pause-circle mr-1"></i> Passive
+                                        </span>
+                                    }
+                                </div>
+
+                                <p class="event-description text-muted">@item.Descritption</p>
+
+                                <div class="d-flex align-items-center justify-content-between mt-auto pt-3">
+                                    <span class="event-price">
+                                        <i class="fas fa-tag mr-1"></i> @item.Price.ToString("N2") ₺
+                                    </span>
+                                    <div>
+                                        <a href="/YummyEvent/UpdateYummyEvent/@item.YummyEventId/"
+                                           class="btn btn-outline-success btn-sm rounded-pill px-3 mr-1">
+                                            <i class="fas fa-pen mr-1"></i> Update
+                                        </a>
+                                        <a href="/YummyEvent/DeleteYummyEvent/@item.YummyEventId/"
+                                           class="btn btn-outline-danger btn-sm rounded-pill px-3 delete-event-btn"
+                                           data-title="@item.Title">
+                                            <i class="fas fa-trash-alt mr-1"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body text-center text-muted py-5">
+                    <i class="fas fa-glass-cheers mb-3" style="font-size: 40px; opacity: .3;"></i>
+                    <h5 class="mb-2">No organization yet</h5>
+                    <p class="mb-4">Create an event organization to showcase it on the site.</p>
+                    <a href="/YummyEvent/CreateYummyEvent/" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus mr-1"></i> Enter a new Organization
+                    </a>
+                </div>
+            </div>
+        }
+
     </div>
 </section>
 
+<style>
+    .event-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        }
+
+    .event-passive {
+        opacity: 0.75;
+    }
+
+        .event-passive .event-img-wrap img {
+            filter: grayscale(85%);
+        }
+
+    .event-img-wrap {
+        position: relative;
+        height: 100%;
+        min-height: 190px;
+        overflow: hidden;
+        background: #f4f5f8;
+    }
+
+        .event-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+    .event-card:hover .event-img-wrap img {
+        transform: scale(1.05);
+    }
+
+    .event-price-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(103, 119, 239, 0.95);
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+        padding: 6px 14px;
+        border-radius: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .event-title {
+        font-weight: 700;
+        color: #34395e;
+        font-size: 19px;
+    }
+
+    .event-status {
+        border-radius: 30px;
+        padding: 6px 12px;
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-left: 12px;
+    }
+
+    .event-description {
+        line-height: 1.7;
+        margin-bottom: 0;
+    }
+
+    .event-price {
+        font-size: 17px;
+        font-weight: 700;
+        color: #6777ef;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-event-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    const title = this.getAttribute('data-title');
+                    if (!confirm('"' + title + '" organizasyonunu silmek istediğine emin misin?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

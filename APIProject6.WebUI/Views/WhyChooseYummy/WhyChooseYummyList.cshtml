@@ -1,50 +1,139 @@
-﻿@model List<ResultWhyChooseYummyDto>
+@model List<ResultWhyChooseYummyDto>
 
 @{
     ViewData["Title"] = "WhyChooseYummyList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
 }
+
+<link rel="stylesheet" href="/yummy-red-1.0.0/assets/vendor/bootstrap-icons/bootstrap-icons.css">
 
 <section class="section">
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>WhyChooseYummy List</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Title</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.Title</td>
-                                        <td>@item.Description</td>
-                                        <td><a href="/WhyChooseYummy/DeleteWhyChooseYummy/@item.ServiceId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/WhyChooseYummy/UpdateWhyChooseYummy/@item.ServiceId/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <a href="/WhyChooseYummy/CreateWhyChooseYummy/" class="btn btn-info">Enter a new WhyChooseYummy</a>
-                    </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-heart text-primary mr-2"></i>
+                    Why Choose Yummy
+                    <span class="badge badge-primary rounded-pill ml-2">@(Model?.Count ?? 0)</span>
+                </h4>
+                <div class="card-header-action">
+                    <a href="/WhyChooseYummy/CreateWhyChooseYummy/" class="btn btn-primary">
+                        <i class="fas fa-plus mr-1"></i> Enter a new WhyChooseYummy
+                    </a>
                 </div>
             </div>
         </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    var iconClass = string.IsNullOrWhiteSpace(item.IconURL) ? "fas fa-star" : item.IconURL;
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card why-card">
+                            <div class="card-body text-center d-flex flex-column">
+                                <div class="why-icon-wrap mx-auto mb-3">
+                                    <i class="@iconClass"></i>
+                                </div>
+                                <h5 class="why-title mb-2">@item.Title</h5>
+                                <p class="why-description text-muted mb-4">@item.Description</p>
+                                <div class="mt-auto">
+                                    <a href="/WhyChooseYummy/UpdateWhyChooseYummy/@item.ServiceId/"
+                                       class="btn btn-outline-success btn-sm rounded-pill px-3 mr-1">
+                                        <i class="fas fa-pen mr-1"></i> Update
+                                    </a>
+                                    <a href="/WhyChooseYummy/DeleteWhyChooseYummy/@item.ServiceId/"
+                                       class="btn btn-outline-danger btn-sm rounded-pill px-3 delete-why-btn"
+                                       data-title="@item.Title">
+                                        <i class="fas fa-trash-alt mr-1"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body text-center text-muted py-5">
+                    <i class="fas fa-heart mb-3" style="font-size: 40px; opacity: .3;"></i>
+                    <h5 class="mb-2">No item yet</h5>
+                    <p class="mb-4">Create a "Why Choose Yummy" item to showcase it on the site.</p>
+                    <a href="/WhyChooseYummy/CreateWhyChooseYummy/" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus mr-1"></i> Enter a new WhyChooseYummy
+                    </a>
+                </div>
+            </div>
+        }
+
     </div>
 </section>
 
+<style>
+    .why-card {
+        border-radius: 12px;
+        height: calc(100% - 30px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
+        .why-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        }
+
+    .why-icon-wrap {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 28px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .col-lg-4:nth-child(3n+1) .why-icon-wrap {
+        background: linear-gradient(135deg, #6777ef, #9f7aea);
+    }
+
+    .col-lg-4:nth-child(3n+2) .why-icon-wrap {
+        background: linear-gradient(135deg, #ffa426, #fc544b);
+    }
+
+    .col-lg-4:nth-child(3n+3) .why-icon-wrap {
+        background: linear-gradient(135deg, #47c363, #3abaf4);
+    }
+
+    .why-title {
+        font-weight: 700;
+        color: #34395e;
+    }
+
+    .why-description {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.6;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-why-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    const title = this.getAttribute('data-title');
+                    if (!confirm('"' + title + '" kaydını silmek istediğine emin misin?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

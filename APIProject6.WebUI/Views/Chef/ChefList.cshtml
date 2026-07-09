@@ -1,54 +1,185 @@
-﻿@model List<ResultChefDto>
+@model List<ResultChefDto>
 
 @{
     ViewData["Title"] = "ChefList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
 }
 
 <section class="section">
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Chef List</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Chef Name</th>
-                                    <th scope="col">Chef Title</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.NameSurname</td>
-                                        <td>@item.Title</td>
-                                        <td>@item.Description</td>
-                                        <td><a href="/Chef/DeleteChef/@item.ChefId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Chef/UpdateChef/@item.ChefId/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <a href="/Chef/CreateChef/" class="btn btn-info">Enter a new Chef</a>
-                    </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-user-tie text-primary mr-2"></i>
+                    Our Chefs
+                    <span class="badge badge-primary rounded-pill ml-2">@(Model?.Count ?? 0)</span>
+                </h4>
+                <div class="card-header-action">
+                    <a href="/Chef/CreateChef/" class="btn btn-primary">
+                        <i class="fas fa-plus mr-1"></i> Enter a new Chef
+                    </a>
                 </div>
             </div>
         </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                        <div class="card chef-card">
+                            <div class="chef-img-wrap">
+                                <img src="@item.ImageURL" alt="@item.NameSurname"
+                                     onerror="this.onerror=null;this.src='/yummy-red-1.0.0/assets/img/chefs/chefs-1.jpg';">
+                                <div class="chef-overlay">
+                                    <a href="/Chef/UpdateChef/@item.ChefId/" class="chef-icon-btn" title="Update">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a href="/Chef/DeleteChef/@item.ChefId/" class="chef-icon-btn delete-chef-btn"
+                                       title="Delete" data-name="@item.NameSurname">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="chef-name mb-1">@item.NameSurname</h5>
+                                <span class="chef-title">@item.Title</span>
+                                <p class="chef-description text-muted mt-2 mb-0">@item.Description</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body text-center text-muted py-5">
+                    <i class="fas fa-user-tie mb-3" style="font-size: 40px; opacity: .3;"></i>
+                    <h5 class="mb-2">No chef yet</h5>
+                    <p class="mb-4">Add a chef to showcase them on the site.</p>
+                    <a href="/Chef/CreateChef/" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus mr-1"></i> Enter a new Chef
+                    </a>
+                </div>
+            </div>
+        }
+
     </div>
 </section>
 
+<style>
+    .chef-card {
+        border-radius: 12px;
+        overflow: hidden;
+        height: calc(100% - 30px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
+        .chef-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        }
 
+    .chef-img-wrap {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+        background: #f4f5f8;
+    }
 
+        .chef-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+    .chef-card:hover .chef-img-wrap img {
+        transform: scale(1.06);
+    }
+
+    .chef-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(52, 57, 94, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    .chef-card:hover .chef-overlay {
+        opacity: 1;
+    }
+
+    .chef-icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #fff;
+        color: #6777ef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        transform: translateY(8px);
+        transition: transform 0.25s ease;
+    }
+
+    .chef-card:hover .chef-icon-btn {
+        transform: translateY(0);
+    }
+
+        .chef-icon-btn:hover {
+            background: #6777ef;
+            color: #fff;
+        }
+
+        .chef-icon-btn.delete-chef-btn:hover {
+            background: #fc544b;
+            color: #fff;
+        }
+
+    .chef-name {
+        font-weight: 700;
+        color: #34395e;
+    }
+
+    .chef-title {
+        display: inline-block;
+        color: #6777ef;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .chef-description {
+        font-size: 13px;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-chef-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    const name = this.getAttribute('data-name');
+                    if (!confirm('"' + name + '" şefini silmek istediğine emin misin?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

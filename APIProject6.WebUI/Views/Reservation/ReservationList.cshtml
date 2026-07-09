@@ -1,60 +1,263 @@
-﻿@model List<ResultReservationDto>
+@model List<ResultReservationDto>
 
 @{
     ViewData["Title"] = "ReservationList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
 }
 
+<style>
+    /* Modern Table Styles */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px; /* Space between rows */
+    }
+    .modern-table thead th {
+        border: none;
+        color: #8898aa;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 10px 15px;
+        background: transparent;
+        font-weight: 600;
+    }
+    .modern-table tbody tr {
+        background-color: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        border-radius: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .modern-table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .modern-table tbody td {
+        vertical-align: middle;
+        padding: 15px;
+        border-top: 1px solid #f0f2f5;
+        border-bottom: 1px solid #f0f2f5;
+        color: #525f7f;
+    }
+    .modern-table tbody td:first-child {
+        border-left: 1px solid #f0f2f5;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+    .modern-table tbody td:last-child {
+        border-right: 1px solid #f0f2f5;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    /* User Profile Cell */
+    .user-profile {
+        display: flex;
+        align-items: center;
+    }
+    .avatar-sm {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.1rem;
+        background: linear-gradient(45deg, #11cdef, #1171ef);
+        flex-shrink: 0;
+        margin-right: 15px;
+    }
+    .user-info h6 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #32325d;
+    }
+    .user-info small {
+        color: #8898aa;
+        font-size: 0.8rem;
+    }
+
+    /* Badges */
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .badge-success-soft { background-color: #d1fae5; color: #065f46; }
+    .badge-warning-soft { background-color: #fef3c7; color: #92400e; }
+    .badge-danger-soft { background-color: #fee2e2; color: #991b1b; }
+    .badge-info-soft { background-color: #dbeafe; color: #1e40af; }
+    .badge-default-soft { background-color: #f3f4f6; color: #374151; }
+
+    /* Action Buttons */
+    .action-btns .btn {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 2px;
+        font-size: 0.85rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 0;
+    }
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+</style>
+
 <section class="section">
+    <div class="section-header d-flex justify-content-between align-items-center mb-4 mt-2">
+        <h2 class="section-title text-dark m-0">Reservation List</h2>
+        <a href="/Reservation/CreateReservation" class="btn btn-primary shadow-sm"><i class="fas fa-plus"></i> New Reservation</a>
+    </div>
+
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Reservation List</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Customer Name</th>
-                                    <th scope="col">Reservation Date</th>
-                                    <th scope="col">Reservation Hour</th>
-                                    <th scope="col">Number of attendees</th>
-                                    <th scope="col">Reservation status</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                    <th scope="col">Confirm</th>
-                                    <th scope="col">Cancel</th>
-                                    <th scope="col">Postpone</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.NameSurname</td>
-                                        <td>@item.ReservationDate</td>
-                                        <td>@item.ReservationTime</td>
-                                        <td>@item.CountOfPeople</td>
-                                        <td>@item.ReservationStatus</td>
-                                        <td><a href="/Reservation/DeleteReservation/@item.ReservationId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Reservation/UpdateReservation/@item.ReservationId/" class="btn btn-success">Update</a></td>
-                                        <td><a href="/Reservation/ConfirmReservation/@item.ReservationId/" class="btn btn-info">Confirm</a></td>
-                                        <td><a href="/Reservation/CancelReservation/@item.ReservationId/" class="btn btn-dark">Cancel</a></td>
-                                        <td><a href="/Reservation/PostponeReservation/@item.ReservationId/" class="btn btn-warning">Postpone</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+        @if (Model == null || !Model.Any())
+        {
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="empty-state">
+                        <i class="far fa-calendar-times"></i>
+                        <h3>No Reservations Found</h3>
+                        <p class="text-muted">There are currently no reservations in the system.</p>
+                        <a href="/Reservation/CreateReservation" class="btn btn-primary mt-2"><i class="fas fa-plus"></i> Create New</a>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Date & Time</th>
+                            <th>Guests</th>
+                            <th class="text-center">Message</th>
+                            <th>Status</th>
+                            <th class="text-center">Quick Actions</th>
+                            <th class="text-right">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var statusClass = "badge-default-soft";
+                            var statusLower = item.ReservationStatus?.ToLower() ?? "";
+                            if (statusLower.Contains("confirm") || statusLower.Contains("onay") || statusLower.Contains("approved")) statusClass = "badge-success-soft";
+                            else if (statusLower.Contains("pend") || statusLower.Contains("bekl")) statusClass = "badge-warning-soft";
+                            else if (statusLower.Contains("cancel") || statusLower.Contains("iptal")) statusClass = "badge-danger-soft";
+                            else if (statusLower.Contains("postpone") || statusLower.Contains("ertel")) statusClass = "badge-info-soft";
+
+                            var initial = !string.IsNullOrEmpty(item.NameSurname) ? item.NameSurname.Substring(0, 1).ToUpper() : "?";
+
+                            <tr>
+                                <td>
+                                    <div class="user-profile">
+                                        <div class="avatar-sm">@initial</div>
+                                        <div class="user-info">
+                                            <h6>@item.NameSurname</h6>
+                                            <small><i class="far fa-envelope mr-1"></i>@(string.IsNullOrEmpty(item.Email) ? "-" : item.Email)</small><br/>
+                                            <small><i class="fas fa-phone-alt mr-1"></i>@(string.IsNullOrEmpty(item.PhoneNumber) ? "-" : item.PhoneNumber)</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div><i class="far fa-calendar-alt text-primary mr-2"></i>@item.ReservationDate.ToString("dd MMM yyyy")</div>
+                                    <div class="text-muted mt-1" style="font-size: 0.85rem;"><i class="far fa-clock text-primary mr-2"></i>@item.ReservationTime</div>
+                                </td>
+                                <td>
+                                    <div class="font-weight-bold"><i class="fas fa-user-friends text-info mr-2"></i>@item.CountOfPeople</div>
+                                </td>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(item.Message))
+                                    {
+                                        <span data-toggle="tooltip" title="@item.Message" style="cursor: help;">
+                                            <i class="far fa-comment-dots text-secondary" style="font-size: 1.2rem;"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="status-badge @statusClass">@item.ReservationStatus</span>
+                                </td>
+                                <td class="text-center action-btns">
+                                    <a href="/Reservation/ConfirmReservation/@item.ReservationId/" class="btn btn-outline-success" data-toggle="tooltip" title="Confirm">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                                    <a href="/Reservation/PostponeReservation/@item.ReservationId/" class="btn btn-outline-warning" data-toggle="tooltip" title="Postpone">
+                                        <i class="far fa-clock"></i>
+                                    </a>
+                                    <a href="/Reservation/CancelReservation/@item.ReservationId/" class="btn btn-outline-dark" data-toggle="tooltip" title="Cancel">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </td>
+                                <td class="text-right action-btns">
+                                    <a href="/Reservation/UpdateReservation/@item.ReservationId/" class="btn btn-primary" data-toggle="tooltip" title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-danger" onclick="confirmDelete('/Reservation/DeleteReservation/@item.ReservationId/')" data-toggle="tooltip" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </section>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle mr-2"></i> Confirm Deletion</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+        <p class="mb-0 h5 text-dark">Are you sure?</p>
+        <p class="text-muted mt-2">Do you really want to delete this reservation? This process cannot be undone.</p>
+      </div>
+      <div class="modal-footer bg-light justify-content-center">
+        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">Cancel</button>
+        <a href="#" id="deleteConfirmBtn" class="btn btn-danger px-4">Yes, Delete It</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+          $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        function confirmDelete(url) {
+            document.getElementById('deleteConfirmBtn').href = url;
+            $('#deleteConfirmModal').modal('show');
+        }
+    </script>
+}

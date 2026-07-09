@@ -1,46 +1,126 @@
-﻿@model List<ResultCategoryDto>
+@model List<ResultCategoryDto>
 @{
     ViewData["Title"] = "CategoryList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
     int count = 0;
 }
 
-
-    <section class="section">
-        <div class="section-body">
-            <div class="row">
-                <div class="col-12 col-md-12 col-lg-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4>Category List</h4>
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>
+                            <i class="fas fa-tags text-primary mr-2"></i>
+                            Category List
+                            <span class="badge badge-primary rounded-pill ml-2">@Model.Count</span>
+                        </h4>
+                        <div class="card-header-form">
+                            <form onsubmit="return false;">
+                                <div class="input-group">
+                                    <input type="text" id="categorySearch" class="form-control" placeholder="Search category...">
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="card-body">
-                            <table class="table">
-                                <thead>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0" id="categoryTable">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th scope="col">#</th>
+                                        <th scope="col" style="width: 60px;" class="text-center">#</th>
                                         <th scope="col">Category Name</th>
-                                        <th scope="col">Delete</th>
-                                        <th scope="col">Update</th>
+                                        <th scope="col" class="text-right" style="width: 220px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach(var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.CategoryName</td>
-                                        <td><a href="/Category/DeleteCategory/@item.CategoryId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Category/UpdateCategory/@item.CategoryId/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
+                                    @foreach (var item in Model)
+                                    {
+                                        count++;
+                                        <tr class="table-row-modern">
+                                            <th scope="row" class="text-center text-muted">@count</th>
+                                            <td class="font-weight-bold">
+                                                <i class="fas fa-utensils text-primary mr-2"></i>
+                                                @item.CategoryName
+                                            </td>
+                                            <td class="text-right">
+                                                <a href="/Category/UpdateCategory/@item.CategoryId/"
+                                                   class="btn btn-outline-success btn-sm rounded-pill px-3 mr-1">
+                                                    <i class="fas fa-edit mr-1"></i> Update
+                                                </a>
+                                                <a href="/Category/DeleteCategory/@item.CategoryId/"
+                                                   class="btn btn-outline-danger btn-sm rounded-pill px-3 delete-category-btn"
+                                                   data-name="@item.CategoryName">
+                                                    <i class="fas fa-trash-alt mr-1"></i> Delete
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
                                 </tbody>
                             </table>
-                        <a href="/Category/CreateCategory/" class="btn btn-info">Enter a new category</a>
                         </div>
+                        <div id="noCategoryResult" class="text-center text-muted py-4" style="display: none;">
+                            <i class="fas fa-search mb-2" style="font-size: 24px;"></i>
+                            <p class="mb-0">No category matches your search.</p>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="/Category/CreateCategory/" class="btn btn-primary rounded-pill px-4">
+                            <i class="fas fa-plus mr-1"></i> Enter a new category
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<style>
+    .table-row-modern:hover {
+        background-color: #f8f9fa !important;
+        transition: 0.2s ease-in-out;
+    }
+
+    #categoryTable td, #categoryTable th {
+        vertical-align: middle;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Live search filter
+            const searchInput = document.getElementById('categorySearch');
+            const rows = document.querySelectorAll('#categoryTable tbody tr');
+            const noResult = document.getElementById('noCategoryResult');
+
+            searchInput.addEventListener('input', function () {
+                const term = this.value.trim().toLocaleLowerCase('tr');
+                let visible = 0;
+
+                rows.forEach(function (row) {
+                    const name = row.cells[1].textContent.trim().toLocaleLowerCase('tr');
+                    const match = name.includes(term);
+                    row.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+
+                noResult.style.display = visible === 0 ? '' : 'none';
+            });
+
+            // Confirm before delete
+            document.querySelectorAll('.delete-category-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    const name = this.getAttribute('data-name');
+                    if (!confirm('"' + name + '" kategorisini silmek istediğine emin misin?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

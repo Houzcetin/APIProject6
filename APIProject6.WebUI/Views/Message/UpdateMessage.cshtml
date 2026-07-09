@@ -1,4 +1,4 @@
-﻿@model GetMessageByIdDto
+@model GetMessageByIdDto
 
 @{
     ViewData["Title"] = "UpdateMessage";
@@ -16,6 +16,9 @@
                     <div class="card-body">
                         <form method="post">
                             <input type="hidden" asp-for="MessageId" />
+                            <input type="hidden" asp-for="SendDate" />
+                            <input type="hidden" asp-for="IsRead" />
+                            <input type="hidden" asp-for="Status" />
                             <label>Sender Name Surname</label>
                             <input type="text" asp-for="NameSurname" class="form-control" />
                             <br />
@@ -28,7 +31,7 @@
                             <label>Message Content</label>
                             <input type="text" asp-for="MessageDetails" class="form-control" />
                             <br />
-                            <button class="btn btn-primary">Create Message</button>
+                            <button class="btn btn-primary">Update Message</button>
                         </form>
 
                     </div>

@@ -1,56 +1,245 @@
-﻿@model List<ResultMessageDto>
+@model List<ResultMessageDto>
 
 @{
     ViewData["Title"] = "MessageList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
 }
 
+<style>
+    .mailbox-container {
+        background: #fdfdfd;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        padding: 1.5rem;
+    }
+    .message-card {
+        display: flex;
+        align-items: flex-start;
+        padding: 1.2rem;
+        background: #fff;
+        border: 1px solid #edf2f7;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
+        position: relative;
+        text-decoration: none !important;
+        color: inherit;
+    }
+    .message-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        border-color: #e2e8f0;
+    }
+    .message-card.unread {
+        background: #f8fafc;
+        border-left: 4px solid #3b82f6;
+    }
+    .message-card.read {
+        border-left: 4px solid transparent;
+    }
+    
+    .msg-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        margin-right: 15px;
+    }
+    .message-card.unread .msg-avatar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .msg-content {
+        flex-grow: 1;
+        min-width: 0;
+    }
+    
+    .msg-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+    .msg-sender {
+        font-size: 1.05rem;
+        color: #1e293b;
+        margin: 0;
+    }
+    .message-card.unread .msg-sender {
+        font-weight: 700;
+    }
+    .msg-date {
+        font-size: 0.8rem;
+        color: #64748b;
+        white-space: nowrap;
+    }
+    .message-card.unread .msg-date {
+        color: #3b82f6;
+        font-weight: 600;
+    }
+    
+    .msg-subject {
+        font-size: 0.95rem;
+        color: #334155;
+        margin: 0 0 4px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .message-card.unread .msg-subject {
+        font-weight: 600;
+        color: #0f172a;
+    }
+    
+    .msg-snippet {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.5;
+        max-height: 2.8em;
+    }
+    
+    .msg-actions {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 8px;
+        margin-left: 15px;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+    .message-card:hover .msg-actions {
+        opacity: 1;
+    }
+    
+    .btn-msg-action {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        font-weight: 500;
+    }
+    .btn-msg-action i {
+        margin-right: 4px;
+    }
+    
+    .empty-inbox {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    .empty-inbox i {
+        font-size: 5rem;
+        color: #cbd5e1;
+        margin-bottom: 1.5rem;
+    }
+    .empty-inbox h3 {
+        color: #475569;
+        font-weight: 600;
+    }
+</style>
+
 <section class="section">
+    <div class="section-header d-flex justify-content-between align-items-center mb-4 mt-2">
+        <h2 class="section-title text-dark m-0">Inbox Messages</h2>
+        <a href="/Message/CreateMessage/" class="btn btn-primary shadow-sm"><i class="fas fa-pen mr-2"></i> Compose</a>
+    </div>
+
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Incoming Message List</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Sender</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Title</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Open Message</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.NameSurname</td>
-                                        <td>@item.Email</td>
-                                        <td>@item.Subject</td>
-                                        <td>@item.SendDate.ToString("dd-MMM-yyyy")</td>
-                                        <td><a href="/Message/AnswerMessageWithOpenAI/@item.MessageId/" class="btn btn-warning">Open Message</a></td>
-                                        <td><a href="/Message/DeleteMessage/@item.MessageId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Message/UpdateMessage/@item.MessageId/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <a href="/Message/CreateMessage/" class="btn btn-info">Enter a new Message</a>
-                    </div>
+        <div class="mailbox-container">
+            @if (Model == null || !Model.Any())
+            {
+                <div class="empty-inbox">
+                    <i class="far fa-envelope-open"></i>
+                    <h3>Your Inbox is Empty</h3>
+                    <p class="text-muted">You don't have any incoming messages at the moment.</p>
                 </div>
-            </div>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    var readClass = item.IsRead ? "read" : "unread";
+                    var initial = !string.IsNullOrEmpty(item.NameSurname) ? item.NameSurname.Substring(0, 1).ToUpper() : "?";
+                    
+                    <div class="message-card @readClass">
+                        <div class="msg-avatar">
+                            @initial
+                        </div>
+                        
+                        <div class="msg-content">
+                            <div class="msg-header">
+                                <h6 class="msg-sender">@item.NameSurname <span style="font-weight:normal; font-size:0.85rem; color:#94a3b8; margin-left: 5px;">&lt;@item.Email&gt;</span></h6>
+                                <span class="msg-date">@item.SendDate.ToString("dd MMM yyyy, HH:mm")</span>
+                            </div>
+                            <h6 class="msg-subject">@item.Subject</h6>
+                            <p class="msg-snippet">@item.MessageDetails</p>
+                        </div>
+                        
+                        <div class="msg-actions">
+                            <div style="display:flex; gap: 5px;">
+                                <a href="/Message/AnswerMessageWithOpenAI/@item.MessageId/" class="btn btn-outline-primary btn-msg-action" title="Reply with AI">
+                                    <i class="fas fa-robot"></i> AI Reply
+                                </a>
+                                <a href="/Message/UpdateMessage/@item.MessageId/" class="btn btn-outline-secondary btn-msg-action" title="Edit">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger btn-msg-action" onclick="confirmDelete('/Message/DeleteMessage/@item.MessageId/')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            @if (!item.IsRead)
+                            {
+                                <span class="badge badge-primary mt-1" style="align-self: flex-end;">New</span>
+                            }
+                        </div>
+                    </div>
+                }
+            }
         </div>
     </div>
 </section>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle mr-2"></i> Confirm Deletion</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+        <p class="mb-0 h5 text-dark">Are you sure?</p>
+        <p class="text-muted mt-2">Do you really want to delete this message? This process cannot be undone.</p>
+      </div>
+      <div class="modal-footer bg-light justify-content-center">
+        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">Cancel</button>
+        <a href="#" id="deleteConfirmBtn" class="btn btn-danger px-4">Yes, Delete It</a>
+      </div>
+    </div>
+  </div>
+</div>
 
+@section Scripts {
+    <script>
+        function confirmDelete(url) {
+            document.getElementById('deleteConfirmBtn').href = url;
+            $('#deleteConfirmModal').modal('show');
+        }
+    </script>
+}

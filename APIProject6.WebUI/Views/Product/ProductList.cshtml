@@ -1,57 +1,224 @@
-﻿@model List<ResultProductDto>
+@model List<ResultProductDto>
 @{
     ViewData["Title"] = "ProductList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
+    var categories = Model.Select(p => p.CategoryName).Distinct().OrderBy(c => c).ToList();
 }
-
-
-
-
 
 <section class="section">
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Product List Managment</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Product Name</th>
-                                    <th scope="col">Product Price</th>
-                                    <th scope="col">Product's Category</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.ProductName</td>
-                                        <td>@item.Price</td>
-                                        <td>@item.CategoryName</td>
-                                        <td><a href="/Product/DeleteProduct/@item.ProductId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Product/UpdateProduct/@item.ProductId/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <a href="/Product/CreateProduct/" class="btn btn-info">Enter a new Product</a>
-                    </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-box-open text-primary mr-2"></i>
+                    Product List Management
+                    <span class="badge badge-primary rounded-pill ml-2">@Model.Count</span>
+                </h4>
+                <div class="card-header-form">
+                    <form onsubmit="return false;">
+                        <div class="input-group">
+                            <input type="text" id="productSearch" class="form-control" placeholder="Search product...">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body pb-0">
+                <div class="d-flex flex-wrap align-items-center mb-3" id="categoryFilters">
+                    <button type="button" class="btn btn-primary btn-sm rounded-pill px-3 mr-2 mb-2 filter-btn active" data-category="">
+                        All
+                    </button>
+                    @foreach (var cat in categories)
+                    {
+                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 mr-2 mb-2 filter-btn" data-category="@cat">
+                            @cat
+                        </button>
+                    }
+                    <a href="/Product/CreateProduct/" class="btn btn-success btn-sm rounded-pill px-3 mb-2 ml-auto">
+                        <i class="fas fa-plus mr-1"></i> Enter a new Product
+                    </a>
                 </div>
             </div>
         </div>
+
+        <div class="row" id="productGrid">
+            @foreach (var item in Model)
+            {
+                <div class="col-12 col-md-6 col-lg-4 col-xl-3 product-col"
+                     data-name="@item.ProductName.ToLower()"
+                     data-category="@item.CategoryName">
+                    <div class="card product-card">
+                        <div class="product-img-wrap">
+                            <img src="@item.ImageURL" alt="@item.ProductName" loading="lazy"
+                                 onerror="this.onerror=null;this.src='/yummy-red-1.0.0/assets/img/menu/menu-item-1.png';">
+                            <span class="badge badge-primary product-cat-badge">@item.CategoryName</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="product-title mb-1">@item.ProductName</h6>
+                            <p class="product-desc text-muted small mb-3">@item.ProductDescription</p>
+                            <div class="d-flex align-items-center justify-content-between mt-auto">
+                                <span class="product-price">@item.Price.ToString("N2") ₺</span>
+                                <div class="product-actions">
+                                    <a href="/Product/UpdateProduct/@item.ProductId/"
+                                       class="btn btn-sm btn-light action-btn" title="Update">
+                                        <i class="fas fa-pen text-success"></i>
+                                    </a>
+                                    <a href="/Product/DeleteProduct/@item.ProductId/"
+                                       class="btn btn-sm btn-light action-btn delete-product-btn" title="Delete"
+                                       data-name="@item.ProductName">
+                                        <i class="fas fa-trash-alt text-danger"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div id="noProductResult" class="card" style="display: none;">
+            <div class="card-body text-center text-muted py-5">
+                <i class="fas fa-search mb-2" style="font-size: 28px;"></i>
+                <p class="mb-0">No product matches your search.</p>
+            </div>
+        </div>
+
     </div>
 </section>
 
+<style>
+    .product-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
 
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        }
 
+    .product-img-wrap {
+        position: relative;
+        height: 160px;
+        overflow: hidden;
+        background: #f4f5f8;
+    }
 
+        .product-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+    .product-card:hover .product-img-wrap img {
+        transform: scale(1.06);
+    }
+
+    .product-cat-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        border-radius: 30px;
+        padding: 5px 12px;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-title {
+        font-weight: 700;
+        color: #34395e;
+    }
+
+    .product-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 34px;
+        line-height: 17px;
+    }
+
+    .product-price {
+        font-size: 17px;
+        font-weight: 700;
+        color: #6777ef;
+    }
+
+    .action-btn {
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 4px;
+        border: 1px solid #eee;
+    }
+
+        .action-btn:hover {
+            background: #f0f1f7;
+        }
+
+    .filter-btn.active {
+        color: #fff;
+        background-color: #6777ef;
+        border-color: #6777ef;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('productSearch');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const cards = document.querySelectorAll('.product-col');
+            const noResult = document.getElementById('noProductResult');
+            let activeCategory = '';
+
+            function applyFilters() {
+                const term = searchInput.value.trim().toLocaleLowerCase('tr');
+                let visible = 0;
+
+                cards.forEach(function (col) {
+                    const matchesText = col.dataset.name.includes(term);
+                    const matchesCategory = !activeCategory || col.dataset.category === activeCategory;
+                    const show = matchesText && matchesCategory;
+                    col.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+
+                noResult.style.display = visible === 0 ? '' : 'none';
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+
+            filterButtons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    filterButtons.forEach(function (b) {
+                        b.classList.remove('active', 'btn-primary');
+                        b.classList.add('btn-outline-primary');
+                    });
+                    this.classList.add('active', 'btn-primary');
+                    this.classList.remove('btn-outline-primary');
+                    activeCategory = this.dataset.category;
+                    applyFilters();
+                });
+            });
+
+            document.querySelectorAll('.delete-product-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    const name = this.getAttribute('data-name');
+                    if (!confirm('"' + name + '" ürününü silmek istediğine emin misin?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

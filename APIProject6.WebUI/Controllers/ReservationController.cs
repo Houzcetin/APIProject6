@@ -1,4 +1,4 @@
-﻿using APIProject6.WebUI.Dtos.ReservationDtos;
+using APIProject6.WebUI.Dtos.ReservationDtos;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
@@ -75,6 +75,40 @@ namespace APIProject6.WebUI.Controllers
             var jsonData = JsonConvert.SerializeObject(updateReservationDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
             await client.PutAsync("https://localhost:7277/api/Reservations/", stringContent);
+            return RedirectToAction("ReservationList");
+        }
+
+        public async Task<IActionResult> ConfirmReservation(int id)
+        {
+            return await ChangeStatusAsync(id, "Approved");
+        }
+
+        public async Task<IActionResult> CancelReservation(int id)
+        {
+            return await ChangeStatusAsync(id, "Cancelled");
+        }
+
+        public async Task<IActionResult> PostponeReservation(int id)
+        {
+            return await ChangeStatusAsync(id, "Postponed");
+        }
+
+        private async Task<IActionResult> ChangeStatusAsync(int id, string status)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var getResponse = await client.GetAsync("https://localhost:7277/api/Reservations/GetReservation?id=" + id);
+            if (getResponse.IsSuccessStatusCode)
+            {
+                var jsonData = await getResponse.Content.ReadAsStringAsync();
+                var value = JsonConvert.DeserializeObject<UpdateReservationDto>(jsonData);
+                if (value != null)
+                {
+                    value.ReservationStatus = status;
+                    var updateJsonData = JsonConvert.SerializeObject(value);
+                    StringContent stringContent = new StringContent(updateJsonData, Encoding.UTF8, "application/json");
+                    await client.PutAsync("https://localhost:7277/api/Reservations/", stringContent);
+                }
+            }
             return RedirectToAction("ReservationList");
         }
     }

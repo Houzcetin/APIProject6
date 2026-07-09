@@ -1,52 +1,172 @@
-﻿@model List<ResultTestimonialDto>
+@model List<ResultTestimonialDto>
 
 @{
     ViewData["Title"] = "TestimonialList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
 }
 
 <section class="section">
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Testimonial List</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Testimonial Name</th>
-                                    <th scope="col">Testimonial Title</th>
-                                    <th scope="col">Testimonial Comment</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.nameSurname</td>
-                                        <td>@item.title</td>
-                                        <td>@item.comment</td>
-                                        <td><a href="/Testimonial/DeleteTestimonial/@item.testimonialID/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Testimonial/UpdateTestimonial/@item.testimonialID/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <a href="/Testimonial/CreateTestimonial/" class="btn btn-info">Enter a new Testimonial</a>
-                    </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-quote-right text-primary mr-2"></i>
+                    Testimonials
+                    <span class="badge badge-primary rounded-pill ml-2">@(Model?.Count ?? 0)</span>
+                </h4>
+                <div class="card-header-action">
+                    <a href="/Testimonial/CreateTestimonial/" class="btn btn-primary">
+                        <i class="fas fa-plus mr-1"></i> Enter a new Testimonial
+                    </a>
                 </div>
             </div>
         </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="card testimonial-card">
+                            <div class="card-body d-flex flex-column">
+
+                                <i class="fas fa-quote-left quote-mark"></i>
+
+                                <p class="testimonial-comment">@item.comment</p>
+
+                                <div class="testimonial-author mt-auto">
+                                    <img src="@item.imageURL" alt="@item.nameSurname" class="testimonial-avatar"
+                                         onerror="this.onerror=null;this.src='/yummy-red-1.0.0/assets/img/testimonials/testimonials-1.jpg';">
+                                    <div class="testimonial-author-info">
+                                        <h6 class="mb-0">@item.nameSurname</h6>
+                                        <small class="text-muted">@item.title</small>
+                                    </div>
+                                    <div class="testimonial-actions ml-auto">
+                                        <a href="/Testimonial/UpdateTestimonial/@item.testimonialID/"
+                                           class="btn btn-light action-btn" title="Update">
+                                            <i class="fas fa-pen text-success"></i>
+                                        </a>
+                                        <a href="/Testimonial/DeleteTestimonial/@item.testimonialID/"
+                                           class="btn btn-light action-btn delete-testimonial-btn" title="Delete"
+                                           data-name="@item.nameSurname">
+                                            <i class="fas fa-trash-alt text-danger"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body text-center text-muted py-5">
+                    <i class="fas fa-quote-right mb-3" style="font-size: 40px; opacity: .3;"></i>
+                    <h5 class="mb-2">No testimonial yet</h5>
+                    <p class="mb-4">Add a customer testimonial to showcase it on the site.</p>
+                    <a href="/Testimonial/CreateTestimonial/" class="btn btn-primary rounded-pill px-4">
+                        <i class="fas fa-plus mr-1"></i> Enter a new Testimonial
+                    </a>
+                </div>
+            </div>
+        }
+
     </div>
 </section>
 
+<style>
+    .testimonial-card {
+        border-radius: 12px;
+        height: calc(100% - 30px);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .testimonial-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #6777ef, #9f7aea);
+        }
+
+    .quote-mark {
+        font-size: 26px;
+        color: #6777ef;
+        opacity: 0.25;
+        margin-bottom: 12px;
+    }
+
+    .testimonial-comment {
+        color: #6c757d;
+        line-height: 1.7;
+        font-style: italic;
+        margin-bottom: 20px;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid #f2f2f2;
+        padding-top: 16px;
+    }
+
+    .testimonial-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 12px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .testimonial-author-info h6 {
+        font-weight: 700;
+        color: #34395e;
+    }
+
+    .action-btn {
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        margin-left: 4px;
+        border: 1px solid #eee;
+    }
+
+        .action-btn:hover {
+            background: #f0f1f7;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-testimonial-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    const name = this.getAttribute('data-name');
+                    if (!confirm('"' + name + '" yorumunu silmek istediğine emin misin?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -75,6 +75,17 @@ namespace APIProject6.WebUI.Controllers
         public async Task<IActionResult> UpdateProduct(int id)
         {
             var client = _httpClientFactory.CreateClient();
+
+            var categoryResponse = await client.GetAsync("https://localhost:7277/api/Categories");
+            var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
+            var categories = JsonConvert.DeserializeObject<List<ResultCategoryDto>>(categoryJson);
+            ViewBag.CategoryValues = (from x in categories
+                                      select new SelectListItem
+                                      {
+                                          Text = x.CategoryName,
+                                          Value = x.CategoryId.ToString()
+                                      }).ToList();
+
             var responseMessage = await client.GetAsync("https://localhost:7277/api/Products/GetProduct?id=" + id);
             var jsonData = await responseMessage.Content.ReadAsStringAsync();
             var value = JsonConvert.DeserializeObject<GetProductByIdDto>(jsonData);
@@ -88,8 +99,35 @@ namespace APIProject6.WebUI.Controllers
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(updateProductDto);
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            await client.PutAsync("https://localhost:7277/api/Products/", stringContent);
-            return RedirectToAction("ProductList");
+            var responseMessage = await client.PutAsync("https://localhost:7277/api/Products/", stringContent);
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("ProductList");
+            }
+
+            ViewBag.Error = await responseMessage.Content.ReadAsStringAsync();
+
+            var categoryResponse = await client.GetAsync("https://localhost:7277/api/Categories");
+            var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
+            var categories = JsonConvert.DeserializeObject<List<ResultCategoryDto>>(categoryJson);
+            ViewBag.CategoryValues = (from x in categories
+                                      select new SelectListItem
+                                      {
+                                          Text = x.CategoryName,
+                                          Value = x.CategoryId.ToString()
+                                      }).ToList();
+
+            var model = new GetProductByIdDto
+            {
+                ProductId = updateProductDto.ProductId,
+                ProductName = updateProductDto.ProductName,
+                ProductDescription = updateProductDto.ProductDescription,
+                Price = updateProductDto.Price,
+                ImageURL = updateProductDto.ImageURL,
+                CategoryId = updateProductDto.CategoryId
+            };
+            return View(model);
         }
     }
 }
