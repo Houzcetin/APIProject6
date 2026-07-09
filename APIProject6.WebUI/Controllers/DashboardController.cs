@@ -1,6 +1,8 @@
+using APIProject6.WebUI.Dtos.GroupReservationDtos;
 using APIProject6.WebUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace APIProject6.WebUI.Controllers
 {
@@ -36,6 +38,22 @@ namespace APIProject6.WebUI.Controllers
             var values = JsonConvert.DeserializeObject<RevenueChartViewModel>(jsonData);
 
             return View(values ?? new RevenueChartViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateGroupReservation(UpdateGroupReservationDto updateGroupReservationDto)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var jsonData = JsonConvert.SerializeObject(updateGroupReservationDto);
+            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            var responseMessage = await client.PutAsync("https://localhost:7277/api/GroupReservations/", stringContent);
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false, message = "Update failed." });
         }
     }
 }

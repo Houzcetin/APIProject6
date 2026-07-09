@@ -1,10 +1,13 @@
 "use strict";
 
 $(function () {
-    chart1();
-    chart2();
-    chart3();
-    chart4();
+    // Her chart yalnızca hedef element sayfada varsa çizilir.
+    // Aksi halde ApexCharts null element için hata fırlatır ve
+    // sonraki chart'lar hiç çizilmez (Dashboard'da #chart1 yok).
+    if (document.querySelector("#chart1")) chart1();
+    if (document.querySelector("#chart2")) chart2();
+    if (document.querySelector("#chart3")) chart3();
+    if (document.querySelector("#chart4")) chart4();
 
     // select all on checkbox click
     $("[data-checkboxes]").each(function () {

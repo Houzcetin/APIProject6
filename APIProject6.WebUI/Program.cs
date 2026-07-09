@@ -1,9 +1,11 @@
 using APIProject6.WebUI.Models;
+using APIProject6.WebUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<IImageFinderService, PexelsImageFinderService>();
 builder.Services.AddSignalR();
 builder.Services.AddHttpClient("openai", c =>
 {

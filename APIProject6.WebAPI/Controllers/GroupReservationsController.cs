@@ -57,8 +57,21 @@ namespace APIProject6.WebAPI.Controllers
 
         public IActionResult UpdateGroupReservation(UpdateGroupReservationDto updateGroupReservationDto)
         {
-            var value = _mapper.Map<GroupReservation>(updateGroupReservationDto);
-            _context.GroupReservations.Update(value);
+            var value = _context.GroupReservations.Find(updateGroupReservationDto.GroupReservationId);
+            if (value == null)
+            {
+                return NotFound("GroupReservation not found.");
+            }
+
+            // Copy only the editable fields so Email / PersonCount are preserved
+            value.ReservationOwner = updateGroupReservationDto.ReservationOwner;
+            value.GroupTitle = updateGroupReservationDto.GroupTitle;
+            value.ReservationDate = updateGroupReservationDto.ReservationDate;
+            value.LastProcessDate = updateGroupReservationDto.LastProcessDate;
+            value.Priority = updateGroupReservationDto.Priority;
+            value.Details = updateGroupReservationDto.Details;
+            value.ReservationStatus = updateGroupReservationDto.ReservationStatus;
+
             _context.SaveChanges();
             return Ok("The GroupReservation has been updated.");
         }

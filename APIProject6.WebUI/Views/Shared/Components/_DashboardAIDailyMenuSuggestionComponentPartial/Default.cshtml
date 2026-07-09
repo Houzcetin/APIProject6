@@ -1,0 +1,63 @@
+﻿@model List<APIProject6.WebUI.Dtos.AISuggestionDtos.AIDailyMenuSuggestionsItem>
+
+@functions {
+    string GetBadgeClass(string category)
+    {
+        return category switch
+        {
+            "Chef Pick" => "badge-primary",
+            "Popular" => "badge-warning",
+            "Healthy" => "badge-success",
+            "High Profit" => "badge-info",
+            "Dessert" => "badge-danger",
+            "New Idea" => "badge-secondary",
+            _ => "badge-primary"
+        };
+    }
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>AI Daily Menu Suggestions</h4>
+    </div>
+
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="d-flex align-items-start mb-4">
+                    <div class="mr-3">
+                        <img src="@item.ImageUrl"
+                             alt="@item.Name"
+                             style="width:75px;height:75px;object-fit:cover;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" />
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1 text-muted">
+                            #AI-@item.ProductId @item.Name
+                        </h6>
+
+                        <p class="mb-2">
+                            @item.Reason
+                        </p>
+
+                        <span class="text-muted mr-2">
+                            @item.Price.ToString("0") ₺
+                        </span>
+
+                        <span class="badge @GetBadgeClass(item.Category)">
+                            @item.Category
+                        </span>
+                    </div>
+                </div>
+
+                <hr />
+            }
+        }
+        else
+        {
+            <p>No AI suggestion found.</p>
+        }
+    </div>
+</div>

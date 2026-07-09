@@ -42,6 +42,8 @@
     <script src="/otika-bootstrap-admin-template/assets/js/scripts.js"></script>
     <!-- Custom JS File -->
     <script src="/otika-bootstrap-admin-template/assets/js/custom.js"></script>
+    @* Sayfaya özel scriptler burada, jQuery/app.min.js yüklendikten sonra çalışır *@
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 
