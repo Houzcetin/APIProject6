@@ -165,21 +165,21 @@ namespace APIProject6.WebUI.Controllers
             return PartialView();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SendMessage(CreateMessageDto createMessageDto)
+        private async Task<string> AnalyzeToxicityAsync(string messageContent)
         {
             var client = new HttpClient();
             var apiKey = _configuration["HuggingFace:ApiKey"]?.Trim();
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                throw new Exception("Hugging Face API key is not found.");
+                return "Waiting for confirmation";
             }
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
             try
             {
                 var translateRequestBody = new
                 {
-                    inputs = createMessageDto.MessageDetails,
+                    inputs = messageContent,
                 };
                 var translateJson = System.Text.Json.JsonSerializer.Serialize(translateRequestBody);
                 var translateContent = new StringContent(translateJson, Encoding.UTF8, "application/json");
@@ -187,12 +187,11 @@ namespace APIProject6.WebUI.Controllers
                 var translateResponse = await client.PostAsync("https://router.huggingface.co/hf-inference/models/Helsinki-NLP/opus-mt-tr-en", translateContent);
                 var translateResponseString = await translateResponse.Content.ReadAsStringAsync();
 
-                string englishText = createMessageDto.MessageDetails;
+                string englishText = messageContent;
                 if (translateResponseString.TrimStart().StartsWith("["))
                 {
                     var translateDoc = JsonDocument.Parse(translateResponseString);
                     englishText = translateDoc.RootElement[0].GetProperty("translation_text").GetString();
-                    //ViewBag.v = englishText;
                 }
 
                 var toxicRequestBody = new
@@ -204,7 +203,7 @@ namespace APIProject6.WebUI.Controllers
                 var toxicResponse = await client.PostAsync("https://router.huggingface.co/hf-inference/models/unitary/toxic-bert", toxicContent);
                 var toxicResponseString = await toxicResponse.Content.ReadAsStringAsync();
 
-                if(toxicResponseString.TrimStart().StartsWith("["))
+                if (toxicResponseString.TrimStart().StartsWith("["))
                 {
                     var toxicDoc = JsonDocument.Parse(toxicResponseString);
                     foreach (var item in toxicDoc.RootElement[0].EnumerateArray())
@@ -212,23 +211,24 @@ namespace APIProject6.WebUI.Controllers
                         string label = item.GetProperty("label").GetString();
                         double score = item.GetProperty("score").GetDouble();
 
-                        if(score > 0.5)
+                        if (score > 0.5)
                         {
-                            createMessageDto.Status = "Toxic message";
-                            break;
+                            return "Toxic message";
                         }
                     }
                 }
-                if(string.IsNullOrEmpty(createMessageDto.Status))
-                {
-                    createMessageDto.Status = "Message received";
-                }
+                return "Message received";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                createMessageDto.Status = "Waiting for confirmation";
-                throw;
+                return "Waiting for confirmation";
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendMessage(CreateMessageDto createMessageDto)
+        {
+            createMessageDto.Status = await AnalyzeToxicityAsync(createMessageDto.MessageDetails);
 
             var client2 = _httpClientFactory.CreateClient();
             var jsonData = JsonConvert.SerializeObject(createMessageDto);
@@ -239,6 +239,28 @@ namespace APIProject6.WebUI.Controllers
                 return RedirectToAction("MessageList");
             }
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AnalyzeExistingMessage(int id)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var responseMessage = await client.GetAsync("https://localhost:7277/api/Messages/GetMessage?id=" + id);
+            if (!responseMessage.IsSuccessStatusCode)
+                return RedirectToAction("MessageList");
+
+            var jsonData = await responseMessage.Content.ReadAsStringAsync();
+            var value = JsonConvert.DeserializeObject<UpdateMessageDto>(jsonData);
+            if (value is null)
+                return RedirectToAction("MessageList");
+
+            value.Status = await AnalyzeToxicityAsync(value.MessageDetails);
+
+            var updateJsonData = JsonConvert.SerializeObject(value);
+            StringContent stringContent = new StringContent(updateJsonData, Encoding.UTF8, "application/json");
+            await client.PutAsync("https://localhost:7277/api/Messages/", stringContent);
+
+            return RedirectToAction("MessageList");
         }
     }
 

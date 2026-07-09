@@ -186,10 +186,30 @@
                             </div>
                             <h6 class="msg-subject">@item.Subject</h6>
                             <p class="msg-snippet">@item.MessageDetails</p>
+                            <div class="mt-2">
+                                @if (string.IsNullOrEmpty(item.Status))
+                                {
+                                    <span class="badge badge-warning" style="font-size: 0.75rem;"><i class="fas fa-exclamation-circle mr-1"></i> Not Analyzed</span>
+                                }
+                                else if (item.Status == "Toxic message")
+                                {
+                                    <span class="badge badge-danger" style="font-size: 0.75rem;"><i class="fas fa-biohazard mr-1"></i> Toxic Message</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-success" style="font-size: 0.75rem;"><i class="fas fa-check-circle mr-1"></i> Safe</span>
+                                }
+                            </div>
                         </div>
                         
                         <div class="msg-actions">
                             <div style="display:flex; gap: 5px;">
+                                @if (string.IsNullOrEmpty(item.Status))
+                                {
+                                    <a href="/Message/AnalyzeExistingMessage/@item.MessageId/" class="btn btn-outline-warning btn-msg-action" title="Analyze Toxicity">
+                                        <i class="fas fa-shield-alt"></i> Analyze
+                                    </a>
+                                }
                                 <a href="/Message/AnswerMessageWithOpenAI/@item.MessageId/" class="btn btn-outline-primary btn-msg-action" title="Reply with AI">
                                     <i class="fas fa-robot"></i> AI Reply
                                 </a>

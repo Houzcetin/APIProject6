@@ -1,47 +1,235 @@
-﻿@model List<ResultImageDto>
+@model List<ResultImageDto>
 
 @{
     ViewData["Title"] = "ImageListWithEdit";
     Layout = "~/Views/AdminLayout/Index.cshtml";
-    int count = 0;
 }
 
-<section class="section">
+<style>
+    :root {
+        --primary-color: #4a6cf7;
+        --danger-color: #ef4444;
+        --success-color: #10b981;
+        --card-radius: 12px;
+        --transition-speed: 0.3s;
+    }
+
+    .edit-gallery-section {
+        padding: 30px 0;
+        background: transparent;
+    }
+
+    .edit-header-box {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        padding: 20px 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .edit-header-title h4 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: #1e293b;
+    }
+
+    .edit-header-title p {
+        margin: 4px 0 0 0;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .btn-add-new {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(74, 108, 247, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-add-new:hover {
+        background: #3b5bdb;
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 6px 15px rgba(74, 108, 247, 0.4);
+    }
+
+    .edit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 25px;
+    }
+
+    .edit-card {
+        background: white;
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0,0,0,0.03);
+        transition: all var(--transition-speed);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .edit-card:hover {
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        transform: translateY(-5px);
+    }
+
+    .edit-card-img {
+        position: relative;
+        padding-top: 65%; /* slightly wider ratio for cards */
+        overflow: hidden;
+        background: #f1f5f9;
+    }
+
+    .edit-card-img img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .edit-card:hover .edit-card-img img {
+        transform: scale(1.08);
+    }
+
+    .edit-card-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .edit-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #334155;
+        margin: 0 0 20px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .edit-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: auto;
+    }
+
+    .action-btn {
+        padding: 10px 0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-update {
+        background: #f1f5f9;
+        color: var(--primary-color);
+    }
+
+    .btn-update:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-delete {
+        background: #fef2f2;
+        color: var(--danger-color);
+    }
+
+    .btn-delete:hover {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(5px);
+        border: 2px dashed #cbd5e1;
+        border-radius: 16px;
+        margin-top: 20px;
+    }
+</style>
+
+<section class="section edit-gallery-section">
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Image List</h4>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Image Name</th>
-                                    <th scope="col">Delete</th>
-                                    <th scope="col">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    count++;
-                                    <tr>
-                                        <th scope="row">@count</th>
-                                        <td>@item.Title</td>
-                                        <td><a href="/Gallery/DeleteImage/@item.ImageId/" class="btn btn-danger">Delete</a></td>
-                                        <td><a href="/Gallery/UpdateImage/@item.ImageId/" class="btn btn-success">Update</a></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <a href="/Gallery/CreateImage/" class="btn btn-info">Enter a new Image</a>
-                    </div>
-                </div>
+        
+        <div class="edit-header-box">
+            <div class="edit-header-title">
+                <h4><i class="fa fa-edit me-2" style="color: var(--primary-color);"></i> Görsel Yönetimi</h4>
+                <p>Sistemdeki tüm görselleri düzenleyin veya yenilerini ekleyin.</p>
             </div>
+            <a href="/Gallery/CreateImage/" class="btn-add-new">
+                <i class="fa fa-plus"></i> Yeni Görsel Ekle
+            </a>
         </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fa fa-image mb-3" style="font-size: 4rem; color: #94a3b8;"></i>
+                <h5 style="color: #475569; font-weight: 600;">Sistemde Görsel Bulunmuyor</h5>
+                <p style="color: #94a3b8; margin-bottom: 25px;">Hemen yeni bir görsel ekleyerek yönetmeye başlayın.</p>
+                <a href="/Gallery/CreateImage/" class="btn-add-new" style="box-shadow: none;">
+                    <i class="fa fa-plus"></i> Yeni Ekle
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="edit-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="edit-card">
+                        <div class="edit-card-img">
+                            <img src="@item.ImageURL" alt="@item.Title" loading="lazy">
+                        </div>
+                        <div class="edit-card-body">
+                            <h5 class="edit-card-title" title="@item.Title">@item.Title</h5>
+                            <div class="edit-actions">
+                                <a href="/Gallery/UpdateImage/@item.ImageId/" class="action-btn btn-update">
+                                    <i class="fa fa-pencil"></i> Düzenle
+                                </a>
+                                <a href="/Gallery/DeleteImage/@item.ImageId/" class="action-btn btn-delete" onclick="return confirm('Bu görseli silmek istediğinize emin misiniz?');">
+                                    <i class="fa fa-trash"></i> Sil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     </div>
 </section>
-

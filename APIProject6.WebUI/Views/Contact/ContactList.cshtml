@@ -1,184 +1,307 @@
 @model List<ResultContactDto>
 
 @{
-    ViewData["Title"] = "ContactList";
+    ViewData["Title"] = "Contact Information";
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
 
 <style>
-    .contact-card {
-        border-radius: 15px;
-        overflow: hidden;
+    :root {
+        --purple-grad: linear-gradient(135deg, #7c5cdd, #a078e6);
+        --blue-grad: linear-gradient(135deg, #5c6bc0, #7986cb);
+        --pink-grad: linear-gradient(135deg, #ff7eb3, #ff758c);
+        --light-bg: #f8fafc;
+        --border-color: #f1f5f9;
+        --text-muted: #94a3b8;
+        --text-dark: #334155;
+    }
+
+    .contact-row-wrapper {
+        margin-bottom: 40px;
+    }
+
+    .contact-card-box {
         background: #fff;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        border: none;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    .contact-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
-    .map-header {
-        height: 200px;
-        width: 100%;
-        background: #e2e8f0;
-        position: relative;
+        border-radius: 16px;
         overflow: hidden;
-    }
-    .map-header iframe {
-        width: 100% !important;
-        height: 100% !important;
-        border: none !important;
-    }
-    .map-fallback {
-        width: 100%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
         height: 100%;
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .contact-card-header {
+        background: var(--purple-grad);
+        color: white;
+        padding: 16px 20px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .contact-card-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.2s;
+    }
+
+    .info-item:hover {
+        transform: translateY(-2px);
+    }
+
+    .info-icon-box {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        background: var(--purple-grad);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        color: #94a3b8;
-        font-size: 3rem;
-    }
-    .card-body-custom {
-        padding: 1.5rem;
-    }
-    .contact-info-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .contact-info-list li {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 12px;
-        color: #475569;
-        font-size: 0.95rem;
-    }
-    .contact-info-list li i {
-        color: #3b82f6;
-        font-size: 1.1rem;
-        width: 24px;
-        margin-top: 3px;
+        color: white;
+        font-size: 1.2rem;
         flex-shrink: 0;
+        margin-right: 15px;
     }
-    .contact-info-list li span {
+
+    .info-text-box {
         flex-grow: 1;
     }
-    .card-footer-custom {
-        padding: 1rem 1.5rem;
-        background: #f8fafc;
-        border-top: 1px solid #f1f5f9;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
+
+    .info-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-bottom: 3px;
     }
-    .btn-action {
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
+
+    .info-value {
+        font-size: 0.95rem;
+        color: var(--text-dark);
         font-weight: 500;
+        margin: 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: auto;
+        padding-top: 10px;
+    }
+
+    .btn-grad {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        transition: all 0.3s;
     }
-    .btn-action i {
-        margin-right: 6px;
+
+    .btn-edit-grad {
+        background: var(--purple-grad);
+        box-shadow: 0 4px 15px rgba(124, 92, 221, 0.3);
     }
-    .empty-state {
-        text-align: center;
-        padding: 5rem 2rem;
+
+    .btn-edit-grad:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(124, 92, 221, 0.4);
+    }
+
+    .btn-delete-grad {
+        background: var(--pink-grad);
+        box-shadow: 0 4px 15px rgba(255, 117, 140, 0.3);
+    }
+
+    .btn-delete-grad:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 117, 140, 0.4);
+    }
+
+    .map-container {
+        flex-grow: 1;
+        padding: 0;
+        position: relative;
+        min-height: 400px;
+    }
+
+    .map-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+        border: none;
+    }
+
+    .header-controls {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 25px;
+    }
+
+    .btn-add-contact {
         background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    }
-    .empty-state i {
-        font-size: 5rem;
-        color: #cbd5e1;
-        margin-bottom: 1.5rem;
-    }
-    .empty-state h3 {
-        color: #334155;
+        color: #7c5cdd;
         font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        border: 1px solid #7c5cdd;
     }
+
+    .btn-add-contact:hover {
+        background: #7c5cdd;
+        color: #fff;
+    }
+
 </style>
 
 <section class="section">
-    <div class="section-header d-flex justify-content-between align-items-center mb-4 mt-2">
-        <h2 class="section-title text-dark m-0">Contact Locations</h2>
-        <a href="/Contact/CreateContact/" class="btn btn-primary shadow-sm"><i class="fas fa-plus mr-2"></i> New Contact</a>
-    </div>
+    <div class="section-body mt-4">
+        
+        <div class="header-controls">
+            <a href="/Contact/CreateContact/" class="btn-add-contact">
+                <i class="fa fa-plus"></i> Add New Contact
+            </a>
+        </div>
 
-    <div class="section-body">
         @if (Model == null || !Model.Any())
         {
-            <div class="empty-state">
-                <i class="fas fa-map-marked-alt"></i>
-                <h3>No Contacts Found</h3>
-                <p class="text-muted mb-4">There are currently no contact addresses or branches listed.</p>
-                <a href="/Contact/CreateContact/" class="btn btn-primary btn-lg"><i class="fas fa-plus mr-2"></i> Add First Contact</a>
+            <div class="text-center py-5 bg-white" style="border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <i class="fa fa-address-book-o mb-3" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <h4 style="color: #475569;">No Contact Information Found</h4>
+                <p style="color: #94a3b8;">There are currently no contact addresses added to the system.</p>
             </div>
         }
         else
         {
-            <div class="row">
-                @foreach (var item in Model)
-                {
-                    <div class="col-12 col-lg-6 mb-4">
-                        <div class="contact-card h-100 d-flex flex-column">
-                            <div class="map-header">
-                                @if (!string.IsNullOrEmpty(item.MapLocation) && item.MapLocation.Contains("<iframe"))
-                                {
-                                    @Html.Raw(item.MapLocation)
-                                }
-                                else if (!string.IsNullOrEmpty(item.MapLocation) && item.MapLocation.StartsWith("http"))
-                                {
-                                    <div class="map-fallback">
-                                        <a href="@item.MapLocation" target="_blank" class="btn btn-light shadow-sm">
-                                            <i class="fas fa-external-link-alt text-primary mr-2"></i> View on Map
-                                        </a>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="map-fallback">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </div>
-                                }
+            @foreach (var item in Model)
+            {
+                <div class="row contact-row-wrapper">
+                    <!-- Left Side: Contact Info -->
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <div class="contact-card-box">
+                            <div class="contact-card-header">
+                                <i class="fa fa-address-card-o"></i> Contact Information
                             </div>
-                            
-                            <div class="card-body-custom flex-grow-1">
-                                <ul class="contact-info-list">
-                                    <li>
-                                        <i class="fas fa-map-pin"></i>
-                                        <span><strong>Address:</strong><br/> @(string.IsNullOrEmpty(item.Address) ? "N/A" : item.Address)</span>
-                                    </li>
-                                    <li>
-                                        <i class="fas fa-phone-alt"></i>
-                                        <span><strong>Phone:</strong><br/> @(string.IsNullOrEmpty(item.Phone) ? "N/A" : item.Phone)</span>
-                                    </li>
-                                    <li>
-                                        <i class="far fa-envelope"></i>
-                                        <span><strong>Email:</strong><br/> @(string.IsNullOrEmpty(item.Email) ? "N/A" : item.Email)</span>
-                                    </li>
-                                    <li>
-                                        <i class="far fa-clock"></i>
-                                        <span><strong>Open Hours:</strong><br/> @(string.IsNullOrEmpty(item.OpenHours) ? "N/A" : item.OpenHours)</span>
-                                    </li>
-                                </ul>
-                            </div>
+                            <div class="contact-card-body">
+                                
+                                <div class="info-item">
+                                    <div class="info-icon-box">
+                                        <i class="fa fa-map-marker"></i>
+                                    </div>
+                                    <div class="info-text-box">
+                                        <div class="info-label">Address</div>
+                                        <p class="info-value">@(string.IsNullOrEmpty(item.Address) ? "-" : item.Address)</p>
+                                    </div>
+                                </div>
 
-                            <div class="card-footer-custom">
-                                <a href="/Contact/UpdateContact/@item.ContactID/" class="btn btn-primary btn-action">
-                                    <i class="fas fa-pen"></i> Edit
-                                </a>
-                                <button type="button" class="btn btn-danger btn-action" onclick="confirmDelete('/Contact/DeleteContact/@item.ContactID/')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                                <div class="info-item">
+                                    <div class="info-icon-box">
+                                        <i class="fa fa-phone"></i>
+                                    </div>
+                                    <div class="info-text-box">
+                                        <div class="info-label">Phone</div>
+                                        <p class="info-value">@(string.IsNullOrEmpty(item.Phone) ? "-" : item.Phone)</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon-box">
+                                        <i class="fa fa-envelope-o"></i>
+                                    </div>
+                                    <div class="info-text-box">
+                                        <div class="info-label">Email</div>
+                                        <p class="info-value">@(string.IsNullOrEmpty(item.Email) ? "-" : item.Email)</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon-box">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
+                                    <div class="info-text-box">
+                                        <div class="info-label">Open Hours</div>
+                                        <p class="info-value">@(string.IsNullOrEmpty(item.OpenHours) ? "-" : item.OpenHours)</p>
+                                    </div>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <a href="/Contact/UpdateContact/@item.ContactID/" class="btn-grad btn-edit-grad">
+                                        <i class="fa fa-pencil-square-o"></i> Edit
+                                    </a>
+                                    <button type="button" class="btn-grad btn-delete-grad" onclick="confirmDelete('/Contact/DeleteContact/@item.ContactID/')">
+                                        <i class="fa fa-trash"></i> Delete
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
-                }
-            </div>
+
+                    <!-- Right Side: Map Location -->
+                    <div class="col-lg-6">
+                        <div class="contact-card-box">
+                            <div class="contact-card-header">
+                                <i class="fa fa-map-o"></i> Location
+                            </div>
+                            <div class="contact-card-body p-0">
+                                <div class="map-container">
+                                    @if (!string.IsNullOrEmpty(item.MapLocation))
+                                    {
+                                        if (item.MapLocation.Contains("<iframe"))
+                                        {
+                                            @Html.Raw(item.MapLocation)
+                                        }
+                                        else if (item.MapLocation.StartsWith("http"))
+                                        {
+                                            <iframe src="@item.MapLocation" loading="lazy"></iframe>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center justify-content-center h-100" style="background: #f8fafc; color: #cbd5e1; min-height: 400px;">
+                                            <div class="text-center">
+                                                <i class="fa fa-map-marker" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                                                <p>No map information provided.</p>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         }
     </div>
 </section>
@@ -188,19 +311,19 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
       <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title"><i class="fas fa-exclamation-triangle mr-2"></i> Confirm Deletion</h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title"><i class="fa fa-exclamation-triangle mr-2"></i> Confirm Deletion</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="background:none; border:none; outline:none; font-size: 1.5rem; color: white;">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body p-4 text-center">
-        <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+        <i class="fa fa-trash-o text-danger mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
         <p class="mb-0 h5 text-dark">Are you sure?</p>
-        <p class="text-muted mt-2">Do you really want to delete this contact information? This process cannot be undone.</p>
+        <p class="text-muted mt-2">Are you sure you want to delete this contact information? This process cannot be undone.</p>
       </div>
       <div class="modal-footer bg-light justify-content-center">
-        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">Cancel</button>
-        <a href="#" id="deleteConfirmBtn" class="btn btn-danger px-4">Yes, Delete It</a>
+        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+        <a href="#" id="deleteConfirmBtn" class="btn btn-danger px-4" style="border-radius: 8px;">Yes, Delete It</a>
       </div>
     </div>
   </div>
